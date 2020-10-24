@@ -14,7 +14,7 @@ fn main() {
             if cfg!(target_os = "macos") {
                 "/Library/Application Support/Adobe/OperatingConfigs"
             } else {
-                "%ProgramFiles%/Adobe/OperatingConfigs"
+                "${ProgramData}/Adobe/OperatingConfigs"
             }
         }
         2 => &args[1],
@@ -72,6 +72,8 @@ fn describe_operating_configs(ocs: &Vec<OperatingConfig>) {
             &oc.app_id,
             &oc.cert_group_id
         );
+        println!("\tPackage NpdId: {}", &oc.npd_id);
+        println!("\tPackage UUID: {}", &oc.package_id);
         println!("\tLicense type: {}", &oc.mode);
         println!("\tLicense expiry date: {}", &oc.expiry_date);
         println!("\tPrecedence: {}", &oc.precedence);
@@ -83,7 +85,8 @@ fn describe_preconditioning_data(ocs: &Vec<OperatingConfig>) {
     println!("Preconditioning Data:");
     for (i, oc) in ocs.iter().enumerate() {
         if i == 0 {
-            println!("Package ID: {} ({})", &oc.npd_id, &oc.package_id);
+            println!("Package NpdId: {}", &oc.npd_id);
+            println!("Package UUID: {}", &oc.package_id);
             println!("License type: {}", &oc.mode);
             println!("License expiry date: {}", &oc.expiry_date);
             println!("Precedence: {}", &oc.precedence);
