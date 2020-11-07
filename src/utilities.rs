@@ -1,13 +1,14 @@
 extern crate base64;
 extern crate chrono;
-extern crate json;
 extern crate shellexpand;
 
 use chrono::prelude::*;
 use std::error::Error;
 use std::fs::{metadata, File};
-use std::io::prelude::*;
 use std::path::Path;
+use std::collections::HashMap;
+
+pub type JsonMap = HashMap<String, serde_json::Value>;
 
 pub struct FileInfo {
     pub pathname: String,
@@ -65,8 +66,8 @@ pub fn u64decode(s: &str) -> String {
     String::from_utf8(bytes).unwrap()
 }
 
-pub fn json_from_base64(s: &str) -> json::JsonValue {
-    json::parse(&u64decode(s)).unwrap()
+pub fn json_from_base64(s: &str) -> JsonMap {
+    serde_json::from_str(&u64decode(s)).unwrap()
 }
 
 pub fn date_from_epoch_millis(timestamp: &str) -> String {
@@ -75,9 +76,7 @@ pub fn date_from_epoch_millis(timestamp: &str) -> String {
     date.format("%Y-%m-%d").to_string()
 }
 
-pub fn json_from_file(info: &FileInfo) -> json::JsonValue {
-    let mut file = File::open(Path::new(&info.pathname)).unwrap();
-    let mut s = String::new();
-    file.read_to_string(&mut s).unwrap();
-    json::parse(&s).unwrap()
+pub fn json_from_file(info: &FileInfo) -> JsonMap {
+    let file = File::open(Path::new(&info.pathname)).unwrap();
+    serde_json::from_reader(&file).unwrap()
 }

@@ -2,8 +2,6 @@ use self::DeploymentMode::*;
 use self::Precedence::*;
 use crate::utilities::*;
 
-use json::JsonValue;
-
 pub struct OperatingConfig {
     pub filename: String,
     pub app_id: String,
@@ -30,13 +28,13 @@ impl OperatingConfig {
             npd_id: name_parts[1].to_string(),
             package_id,
             precedence,
-            mode: DeploymentMode::from("Unknown"),
+            mode: DeploymentMode::from("Unknown", None),
             expiry_date: String::from("Unknown"),
             install_datetime: info.mod_date.to_string(),
         }
     }
 
-    fn from_preconditioning_data(data: &JsonValue) -> OperatingConfig {
+    fn from_preconditioning_data(data: &JsonMap) -> OperatingConfig {
         let info = FileInfo::from_name_and_extension(
             data["name"].as_str().unwrap(),
             data["extension"].as_str().unwrap(),
@@ -56,19 +54,20 @@ impl OperatingConfig {
         result
     }
 
-    fn update_from_license_data(&mut self, data: &JsonValue) {
+    fn update_from_license_data(&mut self, data: &JsonMap) {
         if let Some(payload) = data["payload"].as_str() {
             let payload = json_from_base64(payload);
             if let Some(mode) = payload["deploymentMode"].as_str() {
-                self.mode = DeploymentMode::from(mode);
+                let server = payload["profileServerUrl"].as_str();
+                self.mode = DeploymentMode::from(mode, server);
             }
             if let Some(expiry_timestamp) = payload["asnpData"]["adobeCertSignedValues"]
                 ["values"]["licenseExpiryTimestamp"]
                 .as_str()
             {
                 self.expiry_date = match self.mode {
-                    FrlIsolated | FrlLAN => date_from_epoch_millis(expiry_timestamp),
-                    _ => "controlled by server".into(),
+                    FrlIsolated | FrlLAN(_) => date_from_epoch_millis(expiry_timestamp),
+                    _ => "controlled by server".to_string(),
                 };
             } else {
                 self.expiry_date = "controlled by server".into();
@@ -78,18 +77,21 @@ impl OperatingConfig {
 
     pub fn preconditioning_file_configs(info: &FileInfo) -> Vec<OperatingConfig> {
         let data = json_from_file(&info);
-        let mut result = Vec::new();
-        for oc_data in data["operatingConfigs"].members() {
-            result.push(OperatingConfig::from_preconditioning_data(oc_data))
+        let oc_vec: Vec<JsonMap> =
+            serde_json::from_value(data["operatingConfigs"].clone())
+                .unwrap_or([].into());
+        let mut result: Vec<OperatingConfig> = Vec::new();
+        for oc_data in oc_vec {
+            result.push(OperatingConfig::from_preconditioning_data(&oc_data))
         }
         result
     }
 }
 
 pub enum DeploymentMode {
-    FrlConnected,
+    FrlConnected(String),
     FrlIsolated,
-    FrlLAN,
+    FrlLAN(String),
     Sdl,
     Unknown(String),
 }
@@ -97,9 +99,13 @@ pub enum DeploymentMode {
 impl std::fmt::Display for DeploymentMode {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            FrlConnected => "FRL Online/Connected".fmt(f),
+            FrlConnected(server) => {
+                format!("FRL Online/Connected (server: {})", server).fmt(f)
+            },
             FrlIsolated => "FRL Offline/Isolated".fmt(f),
-            FrlLAN => "FRL LAN".fmt(f),
+            FrlLAN(server) => {
+                format!("FRL LAN (server: {})", server).fmt(f)
+            },
             Sdl => "SDL".fmt(f),
             Unknown(s) => s.fmt(f),
         }
@@ -107,11 +113,12 @@ impl std::fmt::Display for DeploymentMode {
 }
 
 impl DeploymentMode {
-    pub fn from(s: &str) -> DeploymentMode {
+    pub fn from(s: &str, server: Option<&str>) -> DeploymentMode {
+        let server = server.unwrap_or("http://lcs-cops.adobe.io").to_string();
         match s {
-            "FRL_CONNECTED" => FrlConnected,
+            "FRL_CONNECTED" => FrlConnected(server),
             "FRL_ISOLATED" => FrlIsolated,
-            "FRL_LAN" => FrlLAN,
+            "FRL_LAN" => FrlLAN(server),
             "SDL" => Sdl,
             s => Unknown(String::from(s)),
         }
