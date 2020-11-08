@@ -5,6 +5,7 @@ script:
   - cargo build --release --verbose
 os:
   - windows
+cache: cargo
 deploy:
   provider: releases
   api_key:
