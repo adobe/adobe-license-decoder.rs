@@ -1,11 +1,10 @@
 language: rust
-rust: stable beta nightly
-jobs:
-  allow_failures:
-    - rust: nightly
-  fast_finish: true
-script: cargo build --release --verbose
-os: windows
+rust:
+  - stable
+script:
+  - cargo build --release --verbose
+os:
+  - windows
 deploy:
   provider: releases
   api_key:
