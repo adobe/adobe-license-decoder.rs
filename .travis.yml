@@ -1,0 +1,17 @@
+language: rust
+rust: stable beta nightly
+jobs:
+  allow_failures:
+    - rust: nightly
+  fast_finish: true
+script: cargo build --release --verbose
+os: windows
+deploy:
+  provider: releases
+  api_key:
+    secure: tjhaAEzbZXq7iaYRBj4BKUF3osyLDqU0vqnL009FLM/1C7/NyDZYjSm9IUBRDwgRJzKBU0Wjk3iCWR/Td4J0OHQEwXm2XHbqC0PaqZmAvi3MJ7+k+0CaNN6fK0M1H23OsyBc+tj1V95NQWRd4snZtyxSalEzMNuKEPTt3ShtBpc8t/XfWv1ODuHOwirAgKin/fIxFOCo9qv70pabP8ne+WtsPL0900OT9MJ+AsVGO2Hj4AnWEvVOrtcQ9+o3clhTh9iQJATEhb50eD06Dr/h+QVcofshVGAaTS1GxXYKioZATpZWe4OqWR58Se3MWSuhP8k5Lmc+RS0XmY6n5xUyFwnXl4FllTEEAonKu1gdUPzuOeT7lSC6oqCsIXzohg2nGL1rb2oJ+SLV20C2qwiYyB5bEG57AqrcdqJzwG9nQfMiH4LQFYl88kWCAMQ8Po/Fl49GS0n9ky4i5IExDQ8gFA9Z968Hbtl2v047CKkTNciaoQV5hvU3EV7upkKiyrN9civlaiVEqcuToiIqMYV/qEQLVnFBcL5MA/DTi5/+tixGqiUg47rmUHBDWsACW1DLjNiomM1EUHkIJVp9LLkFsdIAC36YMle+VwdKRybs3sxMXX7LPd3rzxMgvLkWMN5/YNjEzluhWStGoNrJi2qEP11RYAfbiC1m6Rw2iLiHFeY=
+  file: target/release/adobe-license-decoder.exe
+  on:
+    tags: true
+    repo: adobeDan/adobe-license-decoder.rs
+  skip_cleanup: 'true'
