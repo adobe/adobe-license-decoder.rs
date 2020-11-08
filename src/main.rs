@@ -20,7 +20,7 @@ fn main() {
         2 => &args[1],
         _ => {
             eprintln!("Too many arguments: {:?}", &args[1..]);
-            eprintln!("Usage: frl-license-decoder [directory-or-preconditiong-file]");
+            eprintln!("Usage: frl-license-decoder [directory-or-preconditioning-file]");
             exit(1);
         }
     };
@@ -44,6 +44,12 @@ fn main() {
             eprintln!("Error: No license files found in '{}'", info.filename);
             exit(1);
         } else {
+            ocs.sort_by(|oc1, oc2| {
+                match oc1.npd_id.cmp(&oc2.npd_id) {
+                    Equal => oc1.app_id.cmp(&oc2.app_id),
+                    otherwise => otherwise,
+                }
+            });
             describe_operating_configs(&ocs);
         }
     } else if info.extension.eq_ignore_ascii_case("json") {
@@ -64,38 +70,33 @@ fn main() {
 }
 
 fn describe_operating_configs(ocs: &Vec<OperatingConfig>) {
-    println!("License files:");
+    let mut current_npd_id = "";
     for (i, oc) in ocs.iter().enumerate() {
-        println!("{}: {}", i + 1, &oc.filename);
-        println!(
-            "\tApp ID: {}, Certificate Group: {}",
-            &oc.app_id,
-            &oc.cert_group_id
-        );
-        println!("\tPackage NpdId: {}", &oc.npd_id);
-        println!("\tPackage UUID: {}", &oc.package_id);
-        println!("\tLicense type: {}", &oc.mode);
-        println!("\tLicense expiry date: {}", &oc.expiry_date);
-        println!("\tPrecedence: {}", &oc.precedence);
-        println!("\tInstall date: {}", &oc.install_datetime);
+        if !current_npd_id.eq_ignore_ascii_case(&oc.npd_id) {
+            current_npd_id = &oc.npd_id;
+            println!("License files for npdId: {}:", &oc.npd_id);
+            println!("    Package UUID: {}", &oc.package_id);
+            println!("    License type: {}", &oc.mode);
+            println!("    License expiry date: {}", &oc.expiry_date);
+            println!("    Precedence: {}", &oc.precedence);
+            println!("Filenames (shown with '...' where the npdId appears):")
+        }
+        println!("{: >2}: {}", i + 1, shorten_oc_file_name(&oc.filename));
+        println!("    App ID: {}, Certificate Group: {}", &oc.app_id, &oc.cert_group_id);
+        println!("    Install date: {}", &oc.install_datetime);
     }
 }
 
 fn describe_preconditioning_data(ocs: &Vec<OperatingConfig>) {
-    println!("Preconditioning Data:");
     for (i, oc) in ocs.iter().enumerate() {
         if i == 0 {
-            println!("Package NpdId: {}", &oc.npd_id);
-            println!("Package UUID: {}", &oc.package_id);
-            println!("License type: {}", &oc.mode);
-            println!("License expiry date: {}", &oc.expiry_date);
-            println!("Precedence: {}", &oc.precedence);
+            println!("Preconditioning data for npdId: {}", &oc.npd_id);
+            println!("    Package UUID: {}", &oc.package_id);
+            println!("    License type: {}", &oc.mode);
+            println!("    License expiry date: {}", &oc.expiry_date);
+            println!("    Precedence: {}", &oc.precedence);
+            println!("Application Licenses (AppID, Certificate Group):")
         }
-        println!(
-            "\t{}: App ID: {}, Certificate Group: {}",
-            i + 1,
-            &oc.app_id,
-            &oc.cert_group_id
-        );
+        println!("{: >2}: {}, {}", i + 1, &oc.app_id, &oc.cert_group_id);
     }
 }

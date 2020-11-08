@@ -80,3 +80,8 @@ pub fn json_from_file(info: &FileInfo) -> JsonMap {
     let file = File::open(Path::new(&info.pathname)).unwrap();
     serde_json::from_reader(&file).unwrap()
 }
+
+pub fn shorten_oc_file_name(name: &str) -> String {
+    let parts: Vec<&str> = name.split("-").collect();
+    format!("{}-...-{}", parts[0], parts[2])
+}
