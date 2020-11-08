@@ -1,5 +1,10 @@
 # adobe_license_decoder
+
+[![Build Status](https://travis-ci.com/adobeDan/adobe-license-decoder.rs.svg?token=qcVzu3bHRxhrd3jwqe2r&branch=master)](https://travis-ci.com/adobeDan/adobe-license-decoder.rs)
+
+
 This lightweight program is your secret decoder ring for FRL and SDL license files found on customer machines.  It can be used to analyze the content of the globally installed OperatingConfig (aka license) files and/or the preconditioning data in a license-only package.  It is a companion to the adobe-licensing-toolkit, which reads the cached licenses in a particular user account and can install/activate/deactivate/uninstall licenses globally.
+
 
 ## Usage
 If invoked without any command-line arguments, the `adobe-license-decoder` will look for a globally installed Adobe/OperatingConfigs directory, and decode all the license files found in that directory.
