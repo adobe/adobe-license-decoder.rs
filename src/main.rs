@@ -1,11 +1,34 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 Adobe, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 mod types;
 mod utilities;
 
+use std::cmp::Ordering::Equal;
 use std::env;
 use std::process::exit;
 use types::*;
 use utilities::*;
-use std::cmp::Ordering::Equal;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -44,21 +67,15 @@ fn main() {
             eprintln!("Error: No license files found in '{}'", info.filename);
             exit(1);
         } else {
-            ocs.sort_by(|oc1, oc2| {
-                match oc1.npd_id.cmp(&oc2.npd_id) {
-                    Equal => oc1.app_id.cmp(&oc2.app_id),
-                    otherwise => otherwise,
-                }
+            ocs.sort_by(|oc1, oc2| match oc1.npd_id.cmp(&oc2.npd_id) {
+                Equal => oc1.app_id.cmp(&oc2.app_id),
+                otherwise => otherwise,
             });
             describe_operating_configs(&ocs);
         }
     } else if info.extension.eq_ignore_ascii_case("json") {
         let mut ocs = OperatingConfig::preconditioning_file_configs(&info);
-        ocs.sort_by(|oc1, oc2|
-            match oc1.app_id.cmp(&oc2.app_id) {
-                Equal => oc1.install_datetime.cmp(&oc2.install_datetime),
-                default => default,
-        });
+        ocs.sort_by(|oc1, oc2| oc1.app_id.cmp(&oc2.app_id));
         describe_preconditioning_data(&ocs);
     } else if info.extension.eq_ignore_ascii_case("operatingconfig") {
         let oc = OperatingConfig::from_license_file(&info);
@@ -82,7 +99,10 @@ fn describe_operating_configs(ocs: &Vec<OperatingConfig>) {
             println!("Filenames (shown with '...' where the npdId appears):")
         }
         println!("{: >2}: {}", i + 1, shorten_oc_file_name(&oc.filename));
-        println!("    App ID: {}, Certificate Group: {}", &oc.app_id, &oc.cert_group_id);
+        println!(
+            "    App ID: {}, Certificate Group: {}",
+            &oc.app_id, &oc.cert_group_id
+        );
         println!("    Install date: {}", &oc.install_datetime);
     }
 }

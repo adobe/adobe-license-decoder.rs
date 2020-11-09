@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 Adobe, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 use self::DeploymentMode::*;
 use self::Precedence::*;
 use crate::utilities::*;
@@ -78,15 +101,12 @@ impl OperatingConfig {
     pub fn preconditioning_file_configs(info: &FileInfo) -> Vec<OperatingConfig> {
         let data = json_from_file(&info);
         let oc_vec: Vec<JsonMap> =
-            serde_json::from_value(data["operatingConfigs"].clone())
-                .unwrap_or([].into());
+            serde_json::from_value(data["operatingConfigs"].clone()).unwrap_or([].into());
         let mut result: Vec<OperatingConfig> = Vec::new();
         for oc_data in oc_vec {
             result.push(OperatingConfig::from_preconditioning_data(&oc_data))
         }
-        result.sort_by(|oc1, oc2| {
-            oc1.app_id.cmp(&oc2.app_id)
-        });
+        result.sort_by(|oc1, oc2| oc1.app_id.cmp(&oc2.app_id));
         result
     }
 }
@@ -104,11 +124,9 @@ impl std::fmt::Display for DeploymentMode {
         match self {
             FrlConnected(server) => {
                 format!("FRL Online/Connected (server: {})", server).fmt(f)
-            },
+            }
             FrlIsolated => "FRL Offline/Isolated".fmt(f),
-            FrlLAN(server) => {
-                format!("FRL LAN (server: {})", server).fmt(f)
-            },
+            FrlLAN(server) => format!("FRL LAN (server: {})", server).fmt(f),
             Sdl => "SDL".fmt(f),
             Unknown(s) => s.fmt(f),
         }

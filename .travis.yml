@@ -15,5 +15,5 @@ deploy:
   file: target/release/adobe-license-{decoder,decoder.exe}
   on:
     tags: true
-    repo: adobeDan/adobe-license-decoder.rs
+    repo: adobe-dmeservices/adobe-license-decoder.rs
   skip_cleanup: 'true'
