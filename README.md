@@ -1,4 +1,4 @@
-# adobe_license_decoder
+# Adobe License Decoder
 
 [![Build Status](https://travis-ci.com/adobeDan/adobe-license-decoder.rs.svg?token=qcVzu3bHRxhrd3jwqe2r&branch=master)](https://travis-ci.com/adobeDan/adobe-license-decoder.rs)
 
