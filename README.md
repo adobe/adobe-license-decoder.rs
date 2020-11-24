@@ -206,4 +206,12 @@ Filenames (shown with '...' where the npdId appears):
 
 ## Support
 
-This tool was originally written by Daniel Brotsky (@adobeDan) and is maintained by the Adobe DME Premium Onboarding team.  If you need support or just have questions about the `adobe-license-decoder`, please file an issue against this project.
+This tool is maintained by the Adobe DME Premium Onboarding team.  If you need support or just have questions about the `adobe-license-decoder`, please file an issue against this project.
+
+## Contributing
+
+Contributions are welcomed! Read the [Contributing Guide](./.github/CONTRIBUTING.md) for more information.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
