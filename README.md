@@ -1,6 +1,6 @@
 # Adobe License Decoder
 
-[![Build Status](https://travis-ci.com/adobe-dmeservices/adobe-license-decoder.rs.svg?token=qcVzu3bHRxhrd3jwqe2r&branch=master)](https://travis-ci.com/adobe-dmeservices/adobe-license-decoder.rs)
+[![Build Status](https://travis-ci.com/adobe/adobe-license-decoder.rs.svg?token=qcVzu3bHRxhrd3jwqe2r&branch=master)](https://travis-ci.com/adobe/adobe-license-decoder.rs)
 
 Anyone who has worked with FRL or SDL licensing is familiar with the adobe-licensing-toolkit command-line tool for Mac and Windows.  This tool runs on client machines in the context of a particular user account and provides information about the state of FRL and SDL licenses that are installed on the machine, including: 
 
