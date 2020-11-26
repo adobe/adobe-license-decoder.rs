@@ -15,24 +15,28 @@ use std::process::exit;
 use types::*;
 use utilities::*;
 
+const APP_SUPPORT_DIR: &str = if cfg!(target_os = "macos") {
+    "/Library/Application Support"
+} else if cfg!(target_os = "windows") {
+    "${ProgramData}"
+} else {
+    "This module can only run on MacOS or Windows"
+};
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = match args.len() {
         1 => {
-            if cfg!(target_os = "macos") {
-                "/Library/Application Support/Adobe/OperatingConfigs"
-            } else {
-                "${ProgramData}/Adobe/OperatingConfigs"
-            }
+            format!("{}/Adobe/OperatingConfigs", APP_SUPPORT_DIR)
         }
-        2 => &args[1],
+        2 => args[1].to_string(),
         _ => {
             eprintln!("Too many arguments: {:?}", &args[1..]);
             eprintln!("Usage: frl-license-decoder [directory-or-preconditioning-file]");
             exit(1);
         }
     };
-    let info = match FileInfo::from_path(path) {
+    let info = match FileInfo::from_path(&path) {
         Ok(val) => val,
         Err(e) => {
             eprintln!("Error: {}: {}", e, path);
@@ -103,5 +107,16 @@ fn describe_preconditioning_data(ocs: &Vec<OperatingConfig>) {
             println!("Application Licenses (AppID, Certificate Group):")
         }
         println!("{: >2}: {}, {}", i + 1, &oc.app_id, &oc.cert_group_id);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::utilities::FileInfo;
+    use crate::APP_SUPPORT_DIR;
+
+    #[test]
+    fn test_os() {
+        assert!(FileInfo::from_path(APP_SUPPORT_DIR).is_ok(), "Application Support path is not present");
     }
 }

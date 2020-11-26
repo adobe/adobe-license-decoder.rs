@@ -93,3 +93,31 @@ pub fn shorten_oc_file_name(name: &str) -> String {
     let parts: Vec<&str> = name.split("-").collect();
     format!("{}-...-{}", parts[0], parts[2])
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_file_info_from_path() {
+        if let Ok(fi) = FileInfo::from_path("src") {
+            assert!(fi.is_directory);
+            assert!(fi.extension.is_empty());
+        }
+        if let Ok(fi) = FileInfo::from_path("src/main.rs") {
+            assert!(!fi.is_directory);
+            assert!(fi.extension.eq_ignore_ascii_case("rs"));
+            assert!(fi.name.eq_ignore_ascii_case("main"));
+        }
+        if let Ok(_) = FileInfo::from_path("no-such-directory") {
+            panic!("Created file info for non-existent path");
+        }
+    }
+
+    #[test]
+    fn test_file_info_from_name_and_extension() {
+        let fi = FileInfo::from_name_and_extension("foo", "bar");
+        assert_eq!(fi.filename, "foo.bar");
+        assert_eq!(fi.pathname, "foo.bar");
+    }
+}
