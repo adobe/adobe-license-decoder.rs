@@ -8,7 +8,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
-        rust: [stable]
 
     steps:
       - uses: actions/checkout@v2
@@ -16,7 +15,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
+          toolchain: stable
           override: true
           components: rustfmt, clippy
 

@@ -1,6 +1,6 @@
 # Adobe License Decoder
 
-[![Build only](https://github.com/adobe/adobe-license-decoder.rs/workflows/Build%20only/badge.svg)](https://github.com/adobe/adobe-license-decoder.rs/actions?query=workflow%3A%22Build+only%22)
+[![Rust CI (stable)](https://github.com/adobe/adobe-license-decoder.rs/workflows/Rust%20CI%20(stable)/badge.svg)](https://github.com/adobe/adobe-license-decoder.rs/actions?query=workflow%3A%22Rust+CI+%28stable%29%22)
 
 Anyone who has worked with FRL or SDL licensing is familiar with the adobe-licensing-toolkit command-line tool for Mac and Windows.  This tool runs on client machines in the context of a particular user account and provides information about the state of FRL and SDL licenses that are installed on the machine, including: 
 
