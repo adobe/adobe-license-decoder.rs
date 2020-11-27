@@ -1,11 +1,11 @@
 /*
- Copyright 2020 Adobe
- All Rights Reserved.
+Copyright 2020 Adobe
+All Rights Reserved.
 
- NOTICE: Adobe permits you to use, modify, and distribute this file in
- accordance with the terms of the Adobe license agreement accompanying
- it.
- */
+NOTICE: Adobe permits you to use, modify, and distribute this file in
+accordance with the terms of the Adobe license agreement accompanying
+it.
+*/
 mod types;
 mod utilities;
 
@@ -26,9 +26,7 @@ const APP_SUPPORT_DIR: &str = if cfg!(target_os = "macos") {
 fn main() {
     let args: Vec<String> = env::args().collect();
     let path = match args.len() {
-        1 => {
-            format!("{}/Adobe/OperatingConfigs", APP_SUPPORT_DIR)
-        }
+        1 => format!("{}/Adobe/OperatingConfigs", APP_SUPPORT_DIR),
         2 => args[1].to_string(),
         _ => {
             eprintln!("Too many arguments: {:?}", &args[1..]);
@@ -117,6 +115,9 @@ mod tests {
 
     #[test]
     fn test_os() {
-        assert!(FileInfo::from_path(APP_SUPPORT_DIR).is_ok(), "Application Support path is not present");
+        assert!(
+            FileInfo::from_path(APP_SUPPORT_DIR).is_ok(),
+            "Application Support path is not present"
+        );
     }
 }

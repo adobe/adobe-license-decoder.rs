@@ -1,11 +1,11 @@
 /*
- Copyright 2020 Adobe
- All Rights Reserved.
+Copyright 2020 Adobe
+All Rights Reserved.
 
- NOTICE: Adobe permits you to use, modify, and distribute this file in
- accordance with the terms of the Adobe license agreement accompanying
- it.
- */
+NOTICE: Adobe permits you to use, modify, and distribute this file in
+accordance with the terms of the Adobe license agreement accompanying
+it.
+*/
 use self::DeploymentMode::*;
 use self::Precedence::*;
 use crate::utilities::*;
