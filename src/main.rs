@@ -50,7 +50,7 @@ fn main() {
                 ocs.push(oc)
             }
         }
-        if ocs.len() == 0 {
+        if ocs.is_empty() {
             eprintln!("Error: No license files found in '{}'", info.filename);
             exit(1);
         } else {
@@ -73,7 +73,7 @@ fn main() {
     }
 }
 
-fn describe_operating_configs(ocs: &Vec<OperatingConfig>) {
+fn describe_operating_configs(ocs: &[OperatingConfig]) {
     let mut current_npd_id = "";
     for (i, oc) in ocs.iter().enumerate() {
         if !current_npd_id.eq_ignore_ascii_case(&oc.npd_id) {
@@ -94,7 +94,7 @@ fn describe_operating_configs(ocs: &Vec<OperatingConfig>) {
     }
 }
 
-fn describe_preconditioning_data(ocs: &Vec<OperatingConfig>) {
+fn describe_preconditioning_data(ocs: &[OperatingConfig]) {
     for (i, oc) in ocs.iter().enumerate() {
         if i == 0 {
             println!("Preconditioning data for npdId: {}", &oc.npd_id);

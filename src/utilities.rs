@@ -90,7 +90,7 @@ pub fn json_from_file(info: &FileInfo) -> JsonMap {
 }
 
 pub fn shorten_oc_file_name(name: &str) -> String {
-    let parts: Vec<&str> = name.split("-").collect();
+    let parts: Vec<&str> = name.split('-').collect();
     format!("{}-...-{}", parts[0], parts[2])
 }
 

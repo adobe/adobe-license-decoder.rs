@@ -11,9 +11,6 @@ shellexpand = "2.0.0"
 chrono = "0.4.19"
 glob = "0.3.0"
 
-[dev-dependencies]
-tempfile = "3.1.0"
-
 [[bin]]
 name = "adobe-license-decoder"
 path = "src/main.rs"

@@ -24,7 +24,7 @@ pub struct OperatingConfig {
 
 impl OperatingConfig {
     fn from_file_info(info: &FileInfo) -> OperatingConfig {
-        let name_parts: Vec<&str> = info.name.split("-").collect();
+        let name_parts: Vec<&str> = info.name.split('-').collect();
         let app_part = u64decode(&name_parts[0]);
         let app_info: Vec<&str> = app_part.split("{}").collect();
         let package_id = u64decode(&name_parts[1]);
@@ -86,7 +86,8 @@ impl OperatingConfig {
     pub fn preconditioning_file_configs(info: &FileInfo) -> Vec<OperatingConfig> {
         let data = json_from_file(&info);
         let oc_vec: Vec<JsonMap> =
-            serde_json::from_value(data["operatingConfigs"].clone()).unwrap_or([].into());
+            serde_json::from_value(data["operatingConfigs"].clone())
+                .unwrap_or_else(|_| [].into());
         let mut result: Vec<OperatingConfig> = Vec::new();
         for oc_data in oc_vec {
             result.push(OperatingConfig::from_preconditioning_data(&oc_data))
