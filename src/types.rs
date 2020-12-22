@@ -9,6 +9,7 @@ it.
 use self::DeploymentMode::*;
 use self::Precedence::*;
 use crate::utilities::*;
+use serde_json::Value;
 
 pub struct OperatingConfig {
     pub filename: String,
@@ -36,7 +37,7 @@ impl OperatingConfig {
             npd_id: name_parts[1].to_string(),
             package_id,
             precedence,
-            mode: DeploymentMode::from("Unknown", None),
+            mode: DeploymentMode::from("Unknown", None, None),
             expiry_date: String::from("Unknown"),
             install_datetime: info.mod_date.to_string(),
         }
@@ -67,14 +68,24 @@ impl OperatingConfig {
             let payload = json_from_base64(payload);
             if let Some(mode) = payload["deploymentMode"].as_str() {
                 let server = payload["profileServerUrl"].as_str();
-                self.mode = DeploymentMode::from(mode, server);
+                if let Some(values) =
+                    payload["asnpData"]["customerCertSignedValues"]["values"].as_str()
+                {
+                    let values = json_from_base64(values);
+                    let codes = values["challengeCodes"].as_array();
+                    self.mode = DeploymentMode::from(mode, server, codes);
+                } else {
+                    self.mode = DeploymentMode::from(mode, server, None);
+                };
             }
             if let Some(expiry_timestamp) = payload["asnpData"]["adobeCertSignedValues"]
                 ["values"]["licenseExpiryTimestamp"]
                 .as_str()
             {
                 self.expiry_date = match self.mode {
-                    FrlIsolated | FrlLAN(_) => date_from_epoch_millis(expiry_timestamp),
+                    FrlOffline | FrlIsolated(_) | FrlLAN(_) => {
+                        date_from_epoch_millis(expiry_timestamp)
+                    }
                     _ => "controlled by server".to_string(),
                 };
             } else {
@@ -99,7 +110,8 @@ impl OperatingConfig {
 
 pub enum DeploymentMode {
     FrlConnected(String),
-    FrlIsolated,
+    FrlOffline,
+    FrlIsolated(usize),
     FrlLAN(String),
     Sdl,
     Unknown(String),
@@ -111,7 +123,14 @@ impl std::fmt::Display for DeploymentMode {
             FrlConnected(server) => {
                 format!("FRL Online/Connected (server: {})", server).fmt(f)
             }
-            FrlIsolated => "FRL Offline/Isolated".fmt(f),
+            FrlOffline => "FRL Offline".fmt(f),
+            FrlIsolated(count) => {
+                if *count == 1usize {
+                    "FRL Isolated (1 code)".fmt(f)
+                } else {
+                    format!("FRL Isolated ({} codes)", count).fmt(f)
+                }
+            }
             FrlLAN(server) => format!("FRL LAN (server: {})", server).fmt(f),
             Sdl => "SDL".fmt(f),
             Unknown(s) => s.fmt(f),
@@ -120,11 +139,23 @@ impl std::fmt::Display for DeploymentMode {
 }
 
 impl DeploymentMode {
-    pub fn from(s: &str, server: Option<&str>) -> DeploymentMode {
+    pub fn from(
+        mode: &str, server: Option<&str>, codes: Option<&Vec<Value>>,
+    ) -> DeploymentMode {
         let server = server.unwrap_or("http://lcs-cops.adobe.io").to_string();
-        match s {
+        match mode {
             "FRL_CONNECTED" => FrlConnected(server),
-            "FRL_ISOLATED" => FrlIsolated,
+            "FRL_ISOLATED" => {
+                const MSG: &str =
+                    "Invalid content: An FRL Isolated package must have census codes.";
+                let codes = codes.expect(MSG);
+                let code0 = codes.get(0).expect(MSG).as_str().expect(MSG);
+                if code0.len() > 18 {
+                    FrlOffline
+                } else {
+                    FrlIsolated(codes.len())
+                }
+            }
             "FRL_LAN" => FrlLAN(server),
             "SDL" => Sdl,
             s => Unknown(String::from(s)),

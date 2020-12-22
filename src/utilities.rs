@@ -11,12 +11,13 @@ extern crate chrono;
 extern crate shellexpand;
 
 use chrono::prelude::*;
+use serde_json::Value;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs::{metadata, File};
 use std::path::Path;
 
-pub type JsonMap = HashMap<String, serde_json::Value>;
+pub type JsonMap = HashMap<String, Value>;
 
 pub struct FileInfo {
     pub pathname: String,
