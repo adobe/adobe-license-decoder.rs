@@ -9,7 +9,6 @@ it.
 use self::DeploymentMode::*;
 use self::Precedence::*;
 use crate::utilities::*;
-use serde_json::Value;
 
 pub struct OperatingConfig {
     pub filename: String,
@@ -37,7 +36,7 @@ impl OperatingConfig {
             npd_id: name_parts[1].to_string(),
             package_id,
             precedence,
-            mode: DeploymentMode::from("Unknown", None, None),
+            mode: Unknown(String::from("Unknown")),
             expiry_date: String::from("Unknown"),
             install_datetime: info.mod_date.to_string(),
         }
@@ -63,34 +62,60 @@ impl OperatingConfig {
         result
     }
 
+    #[allow(clippy::expect_fun_call)]
     fn update_from_license_data(&mut self, data: &JsonMap) {
-        if let Some(payload) = data["payload"].as_str() {
-            let payload = json_from_base64(payload);
-            if let Some(mode) = payload["deploymentMode"].as_str() {
-                let server = payload["profileServerUrl"].as_str();
-                if let Some(values) =
-                    payload["asnpData"]["customerCertSignedValues"]["values"].as_str()
-                {
-                    let values = json_from_base64(values);
-                    let codes = values["challengeCodes"].as_array();
-                    self.mode = DeploymentMode::from(mode, server, codes);
+        let panic_str =
+            |msg: &str| format!("License {} is invalid: {}.", self.filename, msg);
+        let payload = data["payload"]
+            .as_str()
+            .expect(&panic_str("no payload data"));
+        let payload = json_from_base64(payload);
+        let mode_string = payload["deploymentMode"]
+            .as_str()
+            .expect(&panic_str("no deployment mode"));
+        self.mode = match mode_string {
+            "SDL" => Sdl,
+            "FRL_CONNECTED" => {
+                let server = payload["profileServerUrl"]
+                    .as_str()
+                    .unwrap_or("http://lcs-cops.adobe.io")
+                    .to_string();
+                FrlOnline(server)
+            }
+            "FRL_LAN" => {
+                let server = payload["profileServerUrl"]
+                    .as_str()
+                    .expect(&panic_str("no server specified"))
+                    .to_string();
+                FrlLAN(server)
+            }
+            "FRL_ISOLATED" => {
+                let values = payload["asnpData"]["customerCertSignedValues"]["values"]
+                    .as_str()
+                    .expect(&panic_str("no customer binding found"));
+                let values = json_from_base64(values);
+                let codes: Vec<String> =
+                    serde_json::from_value(values["challengeCodes"].clone())
+                        .expect(&panic_str("no machine binding found"));
+                let code0 = codes.get(0).expect(&panic_str("no census codes found"));
+                if code0.len() > 18 {
+                    FrlIsolated(Vec::new())
                 } else {
-                    self.mode = DeploymentMode::from(mode, server, None);
-                };
+                    FrlIsolated(codes)
+                }
             }
-            if let Some(expiry_timestamp) = payload["asnpData"]["adobeCertSignedValues"]
-                ["values"]["licenseExpiryTimestamp"]
-                .as_str()
-            {
-                self.expiry_date = match self.mode {
-                    FrlOffline | FrlIsolated(_) | FrlLAN(_) => {
-                        date_from_epoch_millis(expiry_timestamp)
-                    }
-                    _ => "controlled by server".to_string(),
-                };
-            } else {
-                self.expiry_date = "controlled by server".into();
-            }
+            s => Unknown(String::from(s)),
+        };
+        if let Some(expiry_timestamp) = payload["asnpData"]["adobeCertSignedValues"]
+            ["values"]["licenseExpiryTimestamp"]
+            .as_str()
+        {
+            self.expiry_date = match self.mode {
+                FrlIsolated(_) => date_from_epoch_millis(expiry_timestamp),
+                _ => "controlled by server".to_string(),
+            };
+        } else {
+            self.expiry_date = "controlled by server".into();
         }
     }
 
@@ -109,9 +134,8 @@ impl OperatingConfig {
 }
 
 pub enum DeploymentMode {
-    FrlConnected(String),
-    FrlOffline,
-    FrlIsolated(usize),
+    FrlOnline(String),
+    FrlIsolated(Vec<String>),
     FrlLAN(String),
     Sdl,
     Unknown(String),
@@ -120,45 +144,15 @@ pub enum DeploymentMode {
 impl std::fmt::Display for DeploymentMode {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            FrlConnected(server) => {
-                format!("FRL Online/Connected (server: {})", server).fmt(f)
-            }
-            FrlOffline => "FRL Offline".fmt(f),
-            FrlIsolated(count) => {
-                if *count == 1usize {
-                    "FRL Isolated (1 code)".fmt(f)
-                } else {
-                    format!("FRL Isolated ({} codes)", count).fmt(f)
-                }
-            }
+            FrlOnline(server) => format!("FRL Online (server: {})", server).fmt(f),
+            FrlIsolated(codes) => match codes.len() {
+                0 => "FRL Offline".fmt(f),
+                1 => "FRL Isolated (1 code)".fmt(f),
+                n => format!("FRL Isolated ({} codes)", n).fmt(f),
+            },
             FrlLAN(server) => format!("FRL LAN (server: {})", server).fmt(f),
             Sdl => "SDL".fmt(f),
             Unknown(s) => s.fmt(f),
-        }
-    }
-}
-
-impl DeploymentMode {
-    pub fn from(
-        mode: &str, server: Option<&str>, codes: Option<&Vec<Value>>,
-    ) -> DeploymentMode {
-        let server = server.unwrap_or("http://lcs-cops.adobe.io").to_string();
-        match mode {
-            "FRL_CONNECTED" => FrlConnected(server),
-            "FRL_ISOLATED" => {
-                const MSG: &str =
-                    "Invalid content: An FRL Isolated package must have census codes.";
-                let codes = codes.expect(MSG);
-                let code0 = codes.get(0).expect(MSG).as_str().expect(MSG);
-                if code0.len() > 18 {
-                    FrlOffline
-                } else {
-                    FrlIsolated(codes.len())
-                }
-            }
-            "FRL_LAN" => FrlLAN(server),
-            "SDL" => Sdl,
-            s => Unknown(String::from(s)),
         }
     }
 }
