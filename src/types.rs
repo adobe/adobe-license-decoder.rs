@@ -99,8 +99,20 @@ impl OperatingConfig {
                         .expect(&panic_str("no machine binding found"));
                 let code0 = codes.get(0).expect(&panic_str("no census codes found"));
                 if code0.len() > 18 {
-                    FrlIsolated(Vec::new())
+                    FrlOffline
                 } else {
+                    let codes: Vec<String> = codes
+                        .iter()
+                        .map(|code| {
+                            if code.len() != 18 {
+                                panic!(
+                                    "License {} is invalid: invalid census code",
+                                    self.filename
+                                );
+                            }
+                            format!("{}-{}-{}", &code[0..6], &code[6..12], &code[12..18])
+                        })
+                        .collect();
                     FrlIsolated(codes)
                 }
             }
@@ -111,7 +123,7 @@ impl OperatingConfig {
             .as_str()
         {
             self.expiry_date = match self.mode {
-                FrlIsolated(_) => date_from_epoch_millis(expiry_timestamp),
+                FrlOffline | FrlIsolated(_) => date_from_epoch_millis(expiry_timestamp),
                 _ => "controlled by server".to_string(),
             };
         } else {
@@ -135,6 +147,7 @@ impl OperatingConfig {
 
 pub enum DeploymentMode {
     FrlOnline(String),
+    FrlOffline,
     FrlIsolated(Vec<String>),
     FrlLAN(String),
     Sdl,
@@ -145,8 +158,8 @@ impl std::fmt::Display for DeploymentMode {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             FrlOnline(server) => format!("FRL Online (server: {})", server).fmt(f),
+            FrlOffline => "FRL Offline".fmt(f),
             FrlIsolated(codes) => match codes.len() {
-                0 => "FRL Offline".fmt(f),
                 1 => "FRL Isolated (1 code)".fmt(f),
                 n => format!("FRL Isolated ({} codes)", n).fmt(f),
             },

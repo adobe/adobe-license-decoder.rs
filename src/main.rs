@@ -102,7 +102,7 @@ fn describe_preconditioning_data(ocs: &[OperatingConfig], verbose: bool) {
             println!("    License type: {}", &oc.mode);
             if verbose {
                 if let DeploymentMode::FrlIsolated(codes) = &oc.mode {
-                    println!("    License codes: {}", codes.join(" "));
+                    println!("    Census codes: {}", codes.join(", "));
                 }
             }
             println!("    License expiry date: {}", &oc.expiry_date);
