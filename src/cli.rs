@@ -9,9 +9,9 @@ it.
 use structopt::StructOpt;
 
 const APP_SUPPORT_DIR: &str = if cfg!(target_os = "macos") {
-    "/Library/Application Support"
+    "/Library/Application Support/Adobe/OperatingConfigs"
 } else if cfg!(target_os = "windows") {
-    "${ProgramData}"
+    "${ProgramData}/Adobe/OperatingConfigs"
 } else {
     "This module can only run on MacOS or Windows"
 };

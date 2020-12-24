@@ -41,7 +41,7 @@ fn main() {
                 }
             }
             if ocs.is_empty() {
-                eprintln!("Error: No license files found in '{}'", info.filename);
+                eprintln!("No license files found in '{}'", info.pathname);
                 exit(1);
             } else {
                 ocs.sort_by(|oc1, oc2| match oc1.npd_id.cmp(&oc2.npd_id) {
