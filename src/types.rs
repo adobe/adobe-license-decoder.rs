@@ -92,16 +92,16 @@ impl OperatingConfig {
             "FRL_ISOLATED" => {
                 let values = payload["asnpData"]["customerCertSignedValues"]["values"]
                     .as_str()
-                    .expect(&panic_str("no customer binding found"));
+                    .expect(&panic_str("no customer binding"));
                 let values = json_from_base64(values);
                 let codes: Vec<String> =
                     serde_json::from_value(values["challengeCodes"].clone())
-                        .expect(&panic_str("no machine binding found"));
-                let code0 = codes.get(0).expect(&panic_str("no census codes found"));
+                        .expect(&panic_str("no machine binding"));
+                let code0 = codes.get(0).expect(&panic_str("no census codes"));
                 if code0.len() > 18 {
                     FrlOffline
                 } else {
-                    let codes: Vec<String> = codes
+                    let codes = codes
                         .iter()
                         .map(|code| {
                             if code.len() != 18 {
