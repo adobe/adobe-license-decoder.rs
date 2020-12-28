@@ -19,19 +19,18 @@ const APP_SUPPORT_DIR: &str = if cfg!(target_os = "macos") {
 #[derive(Debug, StructOpt)]
 /// Adobe License Decoder
 ///
-/// When run without arguments, decodes all the installed license files
-/// on the current machine.  You can instead
-/// specify a directory to decode
-/// (which can contain either `.operatingconfig` files or
-/// an `ngl-preconditioning-data.json` file)
-/// or a license file to decode (which should have either a `.operatingconfig`
-/// or a `.json` extension).
+/// Decodes all the installed license files on the current machine.
+/// If you specify a directory, it will decode all the license files
+/// (ending in `.operatingconfig`) or preconditioning files
+/// (named `ngl-preconditioning-data.json`) found in that directory.
+/// If you specify a license or preconditioning file, it will
+/// decode that file.
 pub struct Opt {
-    /// Decode more of the license (aka "verbose")
-    #[structopt(short)]
+    /// Output additional license data (e.g., census codes)
+    #[structopt(short, long)]
     pub verbose: bool,
 
-    /// Directory to search for licenses
+    /// path to directory or file to decode
     #[structopt(default_value = APP_SUPPORT_DIR)]
     pub path: String,
 }

@@ -74,7 +74,7 @@ impl OperatingConfig {
             .as_str()
             .expect(&panic_str("no deployment mode"));
         self.mode = match mode_string {
-            "SDL" => Sdl,
+            "NAMED_USER_EDUCATION_LAB" => Sdl,
             "FRL_CONNECTED" => {
                 let server = payload["profileServerUrl"]
                     .as_str()
@@ -160,8 +160,8 @@ impl std::fmt::Display for DeploymentMode {
             FrlOnline(server) => format!("FRL Online (server: {})", server).fmt(f),
             FrlOffline => "FRL Offline".fmt(f),
             FrlIsolated(codes) => match codes.len() {
-                1 => "FRL Isolated (1 code)".fmt(f),
-                n => format!("FRL Isolated ({} codes)", n).fmt(f),
+                1 => "FRL Isolated (1 census code)".fmt(f),
+                n => format!("FRL Isolated ({} census codes)", n).fmt(f),
             },
             FrlLAN(server) => format!("FRL LAN (server: {})", server).fmt(f),
             Sdl => "SDL".fmt(f),
