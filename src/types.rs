@@ -131,7 +131,7 @@ impl OperatingConfig {
         }
     }
 
-    pub fn preconditioning_file_configs(info: &FileInfo) -> Vec<OperatingConfig> {
+    pub fn from_preconditioning_file(info: &FileInfo) -> Vec<OperatingConfig> {
         let data = json_from_file(&info);
         let oc_vec: Vec<JsonMap> =
             serde_json::from_value(data["operatingConfigs"].clone())

@@ -104,11 +104,15 @@ mod tests {
         if let Ok(fi) = FileInfo::from_path("src") {
             assert!(fi.is_directory);
             assert!(fi.extension.is_empty());
+        } else {
+            panic!("Failed to create file info from 'src' directory.");
         }
         if let Ok(fi) = FileInfo::from_path("src/main.rs") {
             assert!(!fi.is_directory);
             assert!(fi.extension.eq_ignore_ascii_case("rs"));
             assert!(fi.name.eq_ignore_ascii_case("main"));
+        } else {
+            panic!("Failed to create file info from 'src/main.rs' file");
         }
         if let Ok(_) = FileInfo::from_path("no-such-directory") {
             panic!("Created file info for non-existent path");
