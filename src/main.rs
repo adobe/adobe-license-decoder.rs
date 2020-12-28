@@ -124,17 +124,3 @@ fn describe_app(count: i32, app_id: &str, group_id: &str, verbose: bool) {
         }
     );
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::utilities::FileInfo;
-    use crate::APP_SUPPORT_DIR;
-
-    #[test]
-    fn test_os() {
-        assert!(
-            FileInfo::from_path(APP_SUPPORT_DIR).is_ok(),
-            "Application Support path is not present"
-        );
-    }
-}

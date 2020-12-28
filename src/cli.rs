@@ -8,7 +8,7 @@ it.
 */
 use structopt::StructOpt;
 
-const APP_SUPPORT_DIR: &str = if cfg!(target_os = "macos") {
+const DEFAULT_CONFIG_DIR: &str = if cfg!(target_os = "macos") {
     "/Library/Application Support/Adobe/OperatingConfigs"
 } else if cfg!(target_os = "windows") {
     "${ProgramData}/Adobe/OperatingConfigs"
@@ -31,6 +31,26 @@ pub struct Opt {
     pub verbose: bool,
 
     /// path to directory or file to decode
-    #[structopt(default_value = APP_SUPPORT_DIR)]
+    #[structopt(default_value = DEFAULT_CONFIG_DIR)]
     pub path: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::DEFAULT_CONFIG_DIR;
+    use crate::utilities::FileInfo;
+
+    #[test]
+    fn test_os() {
+        let config_path = String::from(DEFAULT_CONFIG_DIR);
+        assert!(
+            config_path.ends_with("/Adobe/OperatingConfigs"),
+            "This module can only be compiled on Mac or Win"
+        );
+        let app_support_path = config_path.trim_end_matches("/Adobe/OperatingConfigs");
+        assert!(
+            FileInfo::from_path(app_support_path).is_ok(),
+            "Application Support path is not present"
+        );
+    }
 }
