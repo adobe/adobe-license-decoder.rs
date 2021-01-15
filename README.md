@@ -26,7 +26,7 @@ If you have some other directory that you want it to look in for license files (
 adobe-license-decoder customer-license-files
 ```
 
-If you have a license-only package, you can invoke the decoder on the directory contaning that package as well. For example:
+If you have a license-only package, you can invoke the decoder on the directory containing that package as well. For example:
 
 ```
 adobe-license-decoder my-package-dir
