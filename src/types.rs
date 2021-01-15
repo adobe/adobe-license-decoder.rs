@@ -36,7 +36,7 @@ impl OperatingConfig {
             npd_id: name_parts[1].to_string(),
             package_id,
             precedence,
-            mode: DeploymentMode::from("Unknown", None),
+            mode: Unknown(String::from("Unknown")),
             expiry_date: String::from("Unknown"),
             install_datetime: info.mod_date.to_string(),
         }
@@ -62,28 +62,76 @@ impl OperatingConfig {
         result
     }
 
+    #[allow(clippy::expect_fun_call)]
     fn update_from_license_data(&mut self, data: &JsonMap) {
-        if let Some(payload) = data["payload"].as_str() {
-            let payload = json_from_base64(payload);
-            if let Some(mode) = payload["deploymentMode"].as_str() {
-                let server = payload["profileServerUrl"].as_str();
-                self.mode = DeploymentMode::from(mode, server);
+        let panic_str =
+            |msg: &str| format!("License {} is invalid: {}.", self.filename, msg);
+        let payload = data["payload"]
+            .as_str()
+            .expect(&panic_str("no payload data"));
+        let payload = json_from_base64(payload);
+        let mode_string = payload["deploymentMode"]
+            .as_str()
+            .expect(&panic_str("no deployment mode"));
+        self.mode = match mode_string {
+            "NAMED_USER_EDUCATION_LAB" => Sdl,
+            "FRL_CONNECTED" => {
+                let server = payload["profileServerUrl"]
+                    .as_str()
+                    .unwrap_or("http://lcs-cops.adobe.io")
+                    .to_string();
+                FrlOnline(server)
             }
-            if let Some(expiry_timestamp) = payload["asnpData"]["adobeCertSignedValues"]
-                ["values"]["licenseExpiryTimestamp"]
-                .as_str()
-            {
-                self.expiry_date = match self.mode {
-                    FrlIsolated | FrlLAN(_) => date_from_epoch_millis(expiry_timestamp),
-                    _ => "controlled by server".to_string(),
-                };
-            } else {
-                self.expiry_date = "controlled by server".into();
+            "FRL_LAN" => {
+                let server = payload["profileServerUrl"]
+                    .as_str()
+                    .expect(&panic_str("no server specified"))
+                    .to_string();
+                FrlLAN(server)
             }
+            "FRL_ISOLATED" => {
+                let values = payload["asnpData"]["customerCertSignedValues"]["values"]
+                    .as_str()
+                    .expect(&panic_str("no customer binding"));
+                let values = json_from_base64(values);
+                let codes: Vec<String> =
+                    serde_json::from_value(values["challengeCodes"].clone())
+                        .expect(&panic_str("no machine binding"));
+                let code0 = codes.get(0).expect(&panic_str("no census codes"));
+                if code0.len() > 18 {
+                    FrlOffline
+                } else {
+                    let codes = codes
+                        .iter()
+                        .map(|code| {
+                            if code.len() != 18 {
+                                panic!(
+                                    "License {} is invalid: invalid census code",
+                                    self.filename
+                                );
+                            }
+                            format!("{}-{}-{}", &code[0..6], &code[6..12], &code[12..18])
+                        })
+                        .collect();
+                    FrlIsolated(codes)
+                }
+            }
+            s => Unknown(String::from(s)),
+        };
+        if let Some(expiry_timestamp) = payload["asnpData"]["adobeCertSignedValues"]
+            ["values"]["licenseExpiryTimestamp"]
+            .as_str()
+        {
+            self.expiry_date = match self.mode {
+                FrlOffline | FrlIsolated(_) => date_from_epoch_millis(expiry_timestamp),
+                _ => "controlled by server".to_string(),
+            };
+        } else {
+            self.expiry_date = "controlled by server".into();
         }
     }
 
-    pub fn preconditioning_file_configs(info: &FileInfo) -> Vec<OperatingConfig> {
+    pub fn from_preconditioning_file(info: &FileInfo) -> Vec<OperatingConfig> {
         let data = json_from_file(&info);
         let oc_vec: Vec<JsonMap> =
             serde_json::from_value(data["operatingConfigs"].clone())
@@ -98,8 +146,9 @@ impl OperatingConfig {
 }
 
 pub enum DeploymentMode {
-    FrlConnected(String),
-    FrlIsolated,
+    FrlOnline(String),
+    FrlOffline,
+    FrlIsolated(Vec<String>),
     FrlLAN(String),
     Sdl,
     Unknown(String),
@@ -108,26 +157,15 @@ pub enum DeploymentMode {
 impl std::fmt::Display for DeploymentMode {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            FrlConnected(server) => {
-                format!("FRL Online/Connected (server: {})", server).fmt(f)
-            }
-            FrlIsolated => "FRL Offline/Isolated".fmt(f),
+            FrlOnline(server) => format!("FRL Online (server: {})", server).fmt(f),
+            FrlOffline => "FRL Offline".fmt(f),
+            FrlIsolated(codes) => match codes.len() {
+                1 => "FRL Isolated (1 census code)".fmt(f),
+                n => format!("FRL Isolated ({} census codes)", n).fmt(f),
+            },
             FrlLAN(server) => format!("FRL LAN (server: {})", server).fmt(f),
             Sdl => "SDL".fmt(f),
             Unknown(s) => s.fmt(f),
-        }
-    }
-}
-
-impl DeploymentMode {
-    pub fn from(s: &str, server: Option<&str>) -> DeploymentMode {
-        let server = server.unwrap_or("http://lcs-cops.adobe.io").to_string();
-        match s {
-            "FRL_CONNECTED" => FrlConnected(server),
-            "FRL_ISOLATED" => FrlIsolated,
-            "FRL_LAN" => FrlLAN(server),
-            "SDL" => Sdl,
-            s => Unknown(String::from(s)),
         }
     }
 }

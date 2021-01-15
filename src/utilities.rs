@@ -11,12 +11,13 @@ extern crate chrono;
 extern crate shellexpand;
 
 use chrono::prelude::*;
+use serde_json::Value;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs::{metadata, File};
 use std::path::Path;
 
-pub type JsonMap = HashMap<String, serde_json::Value>;
+pub type JsonMap = HashMap<String, Value>;
 
 pub struct FileInfo {
     pub pathname: String,
@@ -103,11 +104,15 @@ mod tests {
         if let Ok(fi) = FileInfo::from_path("src") {
             assert!(fi.is_directory);
             assert!(fi.extension.is_empty());
+        } else {
+            panic!("Failed to create file info from 'src' directory.");
         }
         if let Ok(fi) = FileInfo::from_path("src/main.rs") {
             assert!(!fi.is_directory);
             assert!(fi.extension.eq_ignore_ascii_case("rs"));
             assert!(fi.name.eq_ignore_ascii_case("main"));
+        } else {
+            panic!("Failed to create file info from 'src/main.rs' file");
         }
         if let Ok(_) = FileInfo::from_path("no-such-directory") {
             panic!("Created file info for non-existent path");
