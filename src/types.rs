@@ -156,31 +156,16 @@ impl OperatingConfig {
     }
 
     pub fn from_ccp_file(info: &FileInfo) -> Result<Vec<OperatingConfig>> {
-        let file_data =
+        let html =
             std::fs::read_to_string(&info.pathname).wrap_err("Cannot read ccp file")?;
-        let xml_ns = "None";
-        let xml_data = format!(r#"<Wrapper xmlns="{}">{}</Wrapper>"#, file_data, xml_ns);
-        let wrapper: minidom::Element =
-            xml_data.parse().wrap_err("Cannot parse ccp file")?;
-        if let Some(node) = wrapper.get_child("PackageInfo", xml_ns) {
-            if let Some(node) = node.get_child("PackageHistories", xml_ns) {
-                if let Some(node) = node.get_child("PackagingHistory", xml_ns) {
-                    if let Some(node) = node.get_child("InstallInfo", xml_ns) {
-                        if let Some(node) = node.get_child("Preconditioning", xml_ns) {
-                            let data: JsonMap = serde_json::from_str(&node.text())
-                                .wrap_err(
-                                    "Can't parse preconditioning data in ccp file",
-                                )?;
-                            OperatingConfig::from_preconditioning_json(&data)?;
-                        }
-                    }
-                }
-            }
-        }
-        Err(eyre!(
-            "No preconditioning data found in package file: {}",
-            info.pathname
-        ))
+        let doc = visdom::Vis::load(&html)
+            .map_err(|e| eyre!("{}", e))
+            .wrap_err("Cannot parse ccp file")?;
+        let data_node = doc.find("Preconditioning");
+        let data = data_node.text();
+        let data: JsonMap = serde_json::from_str(data)
+            .wrap_err("Can't parse preconditioning data in ccp file")?;
+        OperatingConfig::from_preconditioning_json(&data)
     }
 
     fn get_cached_expiry(&self) -> Result<String> {
