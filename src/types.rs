@@ -131,6 +131,8 @@ impl OperatingConfig {
             .as_str()
         {
             self.expiry_date = date_from_epoch_millis(expiry_timestamp)?;
+        } else if let Ok(expiry_timestamp) = self.get_cached_expiry() {
+            self.expiry_date = date_from_epoch_millis(&expiry_timestamp)?;
         } else {
             self.expiry_date = "controlled by server".to_string();
         }
@@ -164,6 +166,24 @@ impl OperatingConfig {
         let data: JsonMap = serde_json::from_str(data)
             .wrap_err("Can't parse preconditioning data in ccp file")?;
         OperatingConfig::from_preconditioning_json(&data)
+    }
+
+    pub fn get_cached_expiry(&self) -> Result<String> {
+        let err = || eyre!("Malformed license");
+        let app_name = self.app_id.as_str();
+        // adjust the cert name to end with 03 because apps always use that cert group
+        let cert_name =
+            format!("{}03", &self.cert_group_id[..self.cert_group_id.len() - 2]);
+        let note_key = u64encode(&format!("{}{{}}{}", app_name, &cert_name))?;
+        let service = format!("Adobe App Info ({})", &note_key);
+        let username = "App Info";
+        let keyring = keyring::Keyring::new(&service, &username);
+        let note = keyring.get_password()?;
+        let json: JsonMap = serde_json::from_str(&note)?;
+        let payload = json["asnp"]["payload"].as_str().ok_or_else(err)?;
+        let json = json_from_base64(payload)?;
+        let expiry_date = json["licenseExpiryTimestamp"].as_str().ok_or_else(err)?;
+        Ok(expiry_date.to_string())
     }
 }
 

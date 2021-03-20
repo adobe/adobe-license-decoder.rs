@@ -7,7 +7,7 @@ accordance with the terms of the Adobe license agreement accompanying
 it.
 */
 use crate::types::{DeploymentMode, OperatingConfig};
-use crate::utilities::{shorten_oc_file_name, FileInfo};
+use crate::utilities::{date_from_epoch_millis, shorten_oc_file_name, FileInfo};
 use eyre::{eyre, Result};
 use std::cmp::Ordering::Equal;
 
@@ -75,6 +75,9 @@ fn describe_operating_configs(ocs: &[OperatingConfig], verbose: bool) -> Result<
         println!("{: >2}: {}", i + 1, shorten_oc_file_name(&oc.filename)?);
         describe_app(-1, &oc.app_id, &oc.cert_group_id, verbose);
         println!("    Install date: {}", &oc.install_datetime);
+        if let Ok(date) = oc.get_cached_expiry() {
+            println!("    Local expiry date: {}", date_from_epoch_millis(&date)?)
+        }
     }
     Ok(())
 }
