@@ -8,49 +8,62 @@ it.
 */
 use crate::types::{DeploymentMode, OperatingConfig};
 use crate::utilities::{shorten_oc_file_name, FileInfo};
+use eyre::{eyre, Result};
 use std::cmp::Ordering::Equal;
 
-pub fn describe_directory(info: &FileInfo, verbose: bool) {
+pub fn describe_directory(info: &FileInfo, verbose: bool) -> Result<()> {
     let json_file = format!("{}/ngl-preconditioning-data.json", info.pathname);
     if let Ok(info) = FileInfo::from_path(&json_file) {
-        let mut ocs = OperatingConfig::from_preconditioning_file(&info);
-        ocs.sort_by(|oc1, oc2| oc1.app_id.cmp(&oc2.app_id));
-        describe_preconditioning_data(&ocs, verbose);
+        return describe_file(&info, verbose);
+    }
+    let pattern = format!("{}/*.ccp", info.pathname);
+    for path in glob::glob(&pattern).unwrap() {
+        if let Ok(info) = FileInfo::from_path(path.unwrap().to_str().unwrap()) {
+            return describe_file(&info, verbose);
+        }
+    }
+    let pattern = format!("{}/*.operatingconfig", info.pathname);
+    let mut ocs: Vec<OperatingConfig> = Vec::new();
+    for path in glob::glob(&pattern).unwrap() {
+        if let Ok(info) = FileInfo::from_path(path.unwrap().to_str().unwrap()) {
+            let oc = OperatingConfig::from_license_file(&info)?;
+            ocs.push(oc)
+        }
+    }
+    if ocs.is_empty() {
+        Err(eyre!(
+            "No license files found in directory: '{}'",
+            info.pathname
+        ))
     } else {
-        let mut ocs: Vec<OperatingConfig> = Vec::new();
-        let pattern = format!("{}/*.operatingconfig", info.pathname);
-        for path in glob::glob(&pattern).unwrap() {
-            if let Ok(info) = FileInfo::from_path(path.unwrap().to_str().unwrap()) {
-                let oc = OperatingConfig::from_license_file(&info);
-                ocs.push(oc)
-            }
-        }
-        if ocs.is_empty() {
-            panic!("No license files found in '{}'", info.pathname);
-        } else {
-            ocs.sort_by(|oc1, oc2| match oc1.npd_id.cmp(&oc2.npd_id) {
-                Equal => oc1.app_id.cmp(&oc2.app_id),
-                otherwise => otherwise,
-            });
-            describe_operating_configs(&ocs, verbose);
-        }
+        ocs.sort_by(|oc1, oc2| match oc1.npd_id.cmp(&oc2.npd_id) {
+            Equal => oc1.app_id.cmp(&oc2.app_id),
+            otherwise => otherwise,
+        });
+        describe_operating_configs(&ocs, verbose)
     }
 }
 
-pub fn describe_file(info: &FileInfo, verbose: bool) {
+pub fn describe_file(info: &FileInfo, verbose: bool) -> Result<()> {
     if info.extension.eq_ignore_ascii_case("json") {
-        let mut ocs = OperatingConfig::from_preconditioning_file(&info);
+        let mut ocs = OperatingConfig::from_preconditioning_file(info)?;
         ocs.sort_by(|oc1, oc2| oc1.app_id.cmp(&oc2.app_id));
         describe_preconditioning_data(&ocs, verbose);
+        Ok(())
+    } else if info.extension.eq_ignore_ascii_case("ccp") {
+        let mut ocs = OperatingConfig::from_ccp_file(info)?;
+        ocs.sort_by(|oc1, oc2| oc1.app_id.cmp(&oc2.app_id));
+        describe_preconditioning_data(&ocs, verbose);
+        Ok(())
     } else if info.extension.eq_ignore_ascii_case("operatingconfig") {
-        let oc = OperatingConfig::from_license_file(&info);
-        describe_operating_configs(&vec![oc], verbose);
+        let oc = OperatingConfig::from_license_file(&info)?;
+        describe_operating_configs(&vec![oc], verbose)
     } else {
-        panic!("Not a license file: '{}'", info.pathname)
+        Err(eyre!("Not a license file: {}", info.pathname))
     }
 }
 
-fn describe_operating_configs(ocs: &[OperatingConfig], verbose: bool) {
+fn describe_operating_configs(ocs: &[OperatingConfig], verbose: bool) -> Result<()> {
     let mut current_npd_id = "";
     for (i, oc) in ocs.iter().enumerate() {
         if !current_npd_id.eq_ignore_ascii_case(&oc.npd_id) {
@@ -59,10 +72,11 @@ fn describe_operating_configs(ocs: &[OperatingConfig], verbose: bool) {
             describe_package(oc, verbose);
             println!("Filenames (shown with '...' where the npdId appears):")
         }
-        println!("{: >2}: {}", i + 1, shorten_oc_file_name(&oc.filename));
+        println!("{: >2}: {}", i + 1, shorten_oc_file_name(&oc.filename)?);
         describe_app(-1, &oc.app_id, &oc.cert_group_id, verbose);
         println!("    Install date: {}", &oc.install_datetime);
     }
+    Ok(())
 }
 
 fn describe_preconditioning_data(ocs: &[OperatingConfig], verbose: bool) {

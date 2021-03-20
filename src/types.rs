@@ -9,6 +9,7 @@ it.
 use self::DeploymentMode::*;
 use self::Precedence::*;
 use crate::utilities::*;
+use eyre::{eyre, Result, WrapErr};
 
 pub struct OperatingConfig {
     pub filename: String,
@@ -23,56 +24,61 @@ pub struct OperatingConfig {
 }
 
 impl OperatingConfig {
-    fn from_file_info(info: &FileInfo) -> OperatingConfig {
+    fn from_file_info(info: &FileInfo) -> Result<OperatingConfig> {
+        let err = || eyre!("Invalid license file name: {}", info.name);
         let name_parts: Vec<&str> = info.name.split('-').collect();
-        let app_part = u64decode(&name_parts[0]);
+        if name_parts.len() < 3 {
+            return Err(eyre!("Invalid license file name format: {}", info.name));
+        }
+        let npd_id = name_parts[1].to_string();
+        let precedence = Precedence::from(name_parts[2]).wrap_err_with(err)?;
+        let app_part = u64decode(name_parts[0]).wrap_err_with(err)?;
+        let package_id = u64decode(&npd_id).wrap_err_with(err)?;
         let app_info: Vec<&str> = app_part.split("{}").collect();
-        let package_id = u64decode(&name_parts[1]);
-        let precedence = Precedence::from(&name_parts[2]);
-        OperatingConfig {
+        if app_info.len() < 2 {
+            return Err(eyre!("Invalid license file initial section: {}", info.name));
+        }
+        let app_id = app_info[0].to_string();
+        let cert_group_id = app_info[1].to_string();
+        Ok(OperatingConfig {
             filename: info.filename.to_string(),
-            app_id: app_info[0].into(),
-            cert_group_id: app_info[1].to_string(),
-            npd_id: name_parts[1].to_string(),
+            app_id,
+            cert_group_id,
+            npd_id,
             package_id,
             precedence,
             mode: Unknown(String::from("Unknown")),
             expiry_date: String::from("Unknown"),
             install_datetime: info.mod_date.to_string(),
-        }
+        })
     }
 
-    fn from_preconditioning_data(data: &JsonMap) -> OperatingConfig {
+    fn from_preconditioning_data(data: &JsonMap) -> Result<OperatingConfig> {
+        let err = || eyre!("Invalid preconditioning data: bad license file name");
         let info = FileInfo::from_name_and_extension(
-            data["name"].as_str().unwrap(),
-            data["extension"].as_str().unwrap(),
-        );
-        let mut result = OperatingConfig::from_file_info(&info);
-        if let Some(content) = data["content"].as_str() {
-            let content = json_from_base64(content);
-            result.update_from_license_data(&content);
-        }
-        result
+            data["name"].as_str().ok_or_else(err)?,
+            data["extension"].as_str().ok_or_else(err)?,
+        )?;
+        let err = || eyre!("Invalid preconditioning data: bad license content");
+        let mut result = OperatingConfig::from_file_info(&info)?;
+        let content = data["content"].as_str().ok_or_else(err)?;
+        let content = json_from_base64(content).wrap_err_with(err)?;
+        result.update_from_license_data(&content)?;
+        Ok(result)
     }
 
-    pub fn from_license_file(info: &FileInfo) -> OperatingConfig {
-        let mut result = OperatingConfig::from_file_info(&info);
-        let data = json_from_file(&info);
-        result.update_from_license_data(&data);
-        result
+    pub fn from_license_file(info: &FileInfo) -> Result<OperatingConfig> {
+        let mut result = OperatingConfig::from_file_info(&info)?;
+        let data = json_from_file(&info)?;
+        result.update_from_license_data(&data)?;
+        Ok(result)
     }
 
-    #[allow(clippy::expect_fun_call)]
-    fn update_from_license_data(&mut self, data: &JsonMap) {
-        let panic_str =
-            |msg: &str| format!("License {} is invalid: {}.", self.filename, msg);
-        let payload = data["payload"]
-            .as_str()
-            .expect(&panic_str("no payload data"));
-        let payload = json_from_base64(payload);
-        let mode_string = payload["deploymentMode"]
-            .as_str()
-            .expect(&panic_str("no deployment mode"));
+    fn update_from_license_data(&mut self, data: &JsonMap) -> Result<()> {
+        let err = || eyre!("License data is invalid: {}", self.filename);
+        let payload = data["payload"].as_str().ok_or_else(err)?;
+        let payload = json_from_base64(payload)?;
+        let mode_string = payload["deploymentMode"].as_str().ok_or_else(err)?;
         self.mode = match mode_string {
             "NAMED_USER_EDUCATION_LAB" => Sdl,
             "FRL_CONNECTED" => {
@@ -85,19 +91,18 @@ impl OperatingConfig {
             "FRL_LAN" => {
                 let server = payload["profileServerUrl"]
                     .as_str()
-                    .expect(&panic_str("no server specified"))
+                    .ok_or_else(err)?
                     .to_string();
                 FrlLAN(server)
             }
             "FRL_ISOLATED" => {
                 let values = payload["asnpData"]["customerCertSignedValues"]["values"]
                     .as_str()
-                    .expect(&panic_str("no customer binding"));
-                let values = json_from_base64(values);
+                    .ok_or_else(err)?;
+                let values = json_from_base64(values)?;
                 let codes: Vec<String> =
-                    serde_json::from_value(values["challengeCodes"].clone())
-                        .expect(&panic_str("no machine binding"));
-                let code0 = codes.get(0).expect(&panic_str("no census codes"));
+                    serde_json::from_value(values["challengeCodes"].clone())?;
+                let code0 = codes.get(0).ok_or_else(err)?;
                 if code0.len() > 18 {
                     FrlOffline
                 } else {
@@ -105,43 +110,93 @@ impl OperatingConfig {
                         .iter()
                         .map(|code| {
                             if code.len() != 18 {
-                                panic!(
-                                    "License {} is invalid: invalid census code",
-                                    self.filename
-                                );
+                                "invalid-census-code".to_string()
+                            } else {
+                                format!(
+                                    "{}-{}-{}",
+                                    &code[0..6],
+                                    &code[6..12],
+                                    &code[12..18]
+                                )
                             }
-                            format!("{}-{}-{}", &code[0..6], &code[6..12], &code[12..18])
                         })
                         .collect();
                     FrlIsolated(codes)
                 }
             }
-            s => Unknown(String::from(s)),
+            s => Unknown(s.to_string()),
         };
         if let Some(expiry_timestamp) = payload["asnpData"]["adobeCertSignedValues"]
             ["values"]["licenseExpiryTimestamp"]
             .as_str()
         {
-            self.expiry_date = match self.mode {
-                FrlOffline | FrlIsolated(_) => date_from_epoch_millis(expiry_timestamp),
-                _ => "controlled by server".to_string(),
-            };
+            self.expiry_date = date_from_epoch_millis(expiry_timestamp)?;
+        } else if let Ok(expiry_timestamp) = self.get_cached_expiry() {
+            self.expiry_date = date_from_epoch_millis(&expiry_timestamp)?;
         } else {
-            self.expiry_date = "controlled by server".into();
+            self.expiry_date = "controlled by server".to_string();
         }
+        Ok(())
     }
 
-    pub fn from_preconditioning_file(info: &FileInfo) -> Vec<OperatingConfig> {
-        let data = json_from_file(&info);
+    fn from_preconditioning_json(data: &JsonMap) -> Result<Vec<OperatingConfig>> {
         let oc_vec: Vec<JsonMap> =
-            serde_json::from_value(data["operatingConfigs"].clone())
-                .unwrap_or_else(|_| [].into());
+            serde_json::from_value(data["operatingConfigs"].clone())?;
         let mut result: Vec<OperatingConfig> = Vec::new();
         for oc_data in oc_vec {
-            result.push(OperatingConfig::from_preconditioning_data(&oc_data))
+            result.push(OperatingConfig::from_preconditioning_data(&oc_data)?)
         }
         result.sort_by(|oc1, oc2| oc1.app_id.cmp(&oc2.app_id));
-        result
+        Ok(result)
+    }
+
+    pub fn from_preconditioning_file(info: &FileInfo) -> Result<Vec<OperatingConfig>> {
+        let data = json_from_file(&info)?;
+        OperatingConfig::from_preconditioning_json(&data)
+    }
+
+    pub fn from_ccp_file(info: &FileInfo) -> Result<Vec<OperatingConfig>> {
+        let file_data =
+            std::fs::read_to_string(&info.pathname).wrap_err("Cannot read ccp file")?;
+        let xml_ns = "None";
+        let xml_data = format!(r#"<Wrapper xmlns="{}">{}</Wrapper>"#, file_data, xml_ns);
+        let wrapper: minidom::Element =
+            xml_data.parse().wrap_err("Cannot parse ccp file")?;
+        if let Some(node) = wrapper.get_child("PackageInfo", xml_ns) {
+            if let Some(node) = node.get_child("PackageHistories", xml_ns) {
+                if let Some(node) = node.get_child("PackagingHistory", xml_ns) {
+                    if let Some(node) = node.get_child("InstallInfo", xml_ns) {
+                        if let Some(node) = node.get_child("Preconditioning", xml_ns) {
+                            let data: JsonMap = serde_json::from_str(&node.text())
+                                .wrap_err(
+                                    "Can't parse preconditioning data in ccp file",
+                                )?;
+                            OperatingConfig::from_preconditioning_json(&data)?;
+                        }
+                    }
+                }
+            }
+        }
+        Err(eyre!(
+            "No preconditioning data found in package file: {}",
+            info.pathname
+        ))
+    }
+
+    fn get_cached_expiry(&self) -> Result<String> {
+        let err = || eyre!("Malformed license");
+        let app_name = self.app_id.as_str();
+        let cert_name = self.cert_group_id.as_str();
+        let note_key = u64encode(&format!("{}{{}}{}", app_name, cert_name))?;
+        let service = format!("Adobe App Info ({})", &note_key);
+        let username = "App Info";
+        let keyring = keyring::Keyring::new(&service, &username);
+        let note = keyring.get_password()?;
+        let json: JsonMap = serde_json::from_str(&note)?;
+        let payload = json["asnp"]["payload"].as_str().ok_or_else(err)?;
+        let json = json_from_base64(payload)?;
+        let expiry_date = json["licenseExpiryTimestamp"].as_str().ok_or_else(err)?;
+        Ok(expiry_date.to_string())
     }
 }
 
@@ -189,13 +244,13 @@ impl std::fmt::Display for Precedence {
 }
 
 impl Precedence {
-    pub fn from(s: &str) -> Precedence {
+    pub fn from(s: &str) -> Result<Precedence> {
         match s {
-            "70" => AcrobatStandard,
-            "100" => AcrobatPro,
-            "80" => CCSingleApp,
-            "90" => CCAllApps,
-            _ => panic!("Precedence ({}) must be 70, 80, 90, or 100", s),
+            "70" => Ok(AcrobatStandard),
+            "100" => Ok(AcrobatPro),
+            "80" => Ok(CCSingleApp),
+            "90" => Ok(CCAllApps),
+            _ => Err(eyre!("Precedence ({}) must be 70, 80, 90, or 100", s)),
         }
     }
 }

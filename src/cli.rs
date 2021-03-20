@@ -8,7 +8,7 @@ it.
 */
 use structopt::StructOpt;
 
-const DEFAULT_CONFIG_DIR: &str = if cfg!(target_os = "macos") {
+pub const DEFAULT_CONFIG_DIR: &str = if cfg!(target_os = "macos") {
     "/Library/Application Support/Adobe/OperatingConfigs"
 } else if cfg!(target_os = "windows") {
     "${ProgramData}/Adobe/OperatingConfigs"
@@ -21,18 +21,14 @@ const DEFAULT_CONFIG_DIR: &str = if cfg!(target_os = "macos") {
 ///
 /// Decodes all the installed license files on the current machine.
 /// If you specify a directory, it will decode all the license files
-/// (ending in `.operatingconfig`) or preconditioning files
-/// (named `ngl-preconditioning-data.json`) found in that directory.
-/// If you specify a license or preconditioning file, it will
-/// decode that file.
+/// or preconditioning files found in that directory.
 pub struct Opt {
     /// Output additional license data (e.g., census codes)
     #[structopt(short, long)]
     pub verbose: bool,
 
     /// path to directory or file to decode
-    #[structopt(default_value = DEFAULT_CONFIG_DIR)]
-    pub path: String,
+    pub path: Option<String>,
 }
 
 #[cfg(test)]

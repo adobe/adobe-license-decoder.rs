@@ -11,9 +11,9 @@ extern crate chrono;
 extern crate shellexpand;
 
 use chrono::prelude::*;
+use eyre::{Result, WrapErr};
 use serde_json::Value;
 use std::collections::HashMap;
-use std::error::Error;
 use std::fs::{metadata, File};
 use std::path::Path;
 
@@ -29,7 +29,7 @@ pub struct FileInfo {
 }
 
 impl FileInfo {
-    pub fn from_path(path: &str) -> Result<FileInfo, Box<dyn Error>> {
+    pub fn from_path(path: &str) -> Result<FileInfo> {
         let path: String = shellexpand::full(path)?.into();
         let info = metadata(&path)?;
         let path_object = Path::new(&path);
@@ -57,42 +57,53 @@ impl FileInfo {
         })
     }
 
-    pub fn from_name_and_extension(name: &str, extension: &str) -> FileInfo {
+    pub fn from_name_and_extension(name: &str, extension: &str) -> Result<FileInfo> {
         let filename = format!("{}.{}", name, extension);
-        FileInfo {
+        Ok(FileInfo {
             pathname: filename.to_string(),
             filename,
             name: name.into(),
             extension: extension.into(),
             is_directory: false,
             mod_date: "Unknown".into(),
-        }
+        })
     }
 }
 
-pub fn u64decode(s: &str) -> String {
-    let bytes = base64::decode_config(s, base64::URL_SAFE_NO_PAD).unwrap();
-    String::from_utf8(bytes).unwrap()
+pub fn u64decode(s: &str) -> Result<String> {
+    let bytes = base64::decode_config(s, base64::URL_SAFE_NO_PAD)?;
+    String::from_utf8(bytes).wrap_err("Illegal license encoding")
 }
 
-pub fn json_from_base64(s: &str) -> JsonMap {
-    serde_json::from_str(&u64decode(s)).unwrap()
+pub fn u64encode(s: &str) -> Result<String> {
+    Ok(base64::encode_config(s, base64::URL_SAFE_NO_PAD))
 }
 
-pub fn date_from_epoch_millis(timestamp: &str) -> String {
-    let timestamp = timestamp.parse::<i64>().unwrap() / 1000;
-    let date = Local.timestamp(timestamp, 0);
-    date.format("%Y-%m-%d").to_string()
+pub fn json_from_base64(s: &str) -> Result<JsonMap> {
+    serde_json::from_str(&u64decode(s)?).wrap_err("Illegal license data")
 }
 
-pub fn json_from_file(info: &FileInfo) -> JsonMap {
-    let file = File::open(Path::new(&info.pathname)).unwrap();
-    serde_json::from_reader(&file).unwrap()
+pub fn date_from_epoch_millis(timestamp: &str) -> Result<String> {
+    let timestamp = timestamp
+        .parse::<i64>()
+        .wrap_err("Illegal license timestamp")?;
+    let date = Local.timestamp(timestamp / 1000, 0);
+    Ok(date.format("%Y-%m-%d").to_string())
 }
 
-pub fn shorten_oc_file_name(name: &str) -> String {
+pub fn json_from_file(info: &FileInfo) -> Result<JsonMap> {
+    let file =
+        File::open(Path::new(&info.pathname)).wrap_err("Can't read license file")?;
+    Ok(serde_json::from_reader(&file).wrap_err("Can't parse license data")?)
+}
+
+pub fn shorten_oc_file_name(name: &str) -> Result<String> {
     let parts: Vec<&str> = name.split('-').collect();
-    format!("{}-...-{}", parts[0], parts[2])
+    if parts.len() != 3 {
+        Ok(name.to_string())
+    } else {
+        Ok(format!("{}-...-{}", parts[0], parts[2]))
+    }
 }
 
 #[cfg(test)]
