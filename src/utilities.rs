@@ -72,11 +72,19 @@ impl FileInfo {
 
 pub fn u64decode(s: &str) -> Result<String> {
     let bytes = base64::decode_config(s, base64::URL_SAFE_NO_PAD)?;
-    String::from_utf8(bytes).wrap_err("Illegal license encoding")
+    String::from_utf8(bytes).wrap_err("Illegal payload encoding")
+}
+
+pub fn u64encode(s: &str) -> Result<String> {
+    Ok(base64::encode_config(s, base64::URL_SAFE_NO_PAD))
 }
 
 pub fn json_from_base64(s: &str) -> Result<JsonMap> {
-    serde_json::from_str(&u64decode(s)?).wrap_err("Illegal license data")
+    serde_json::from_str(&u64decode(s)?).wrap_err("Illegal payload data")
+}
+
+pub fn json_from_str(s: &str) -> Result<JsonMap> {
+    serde_json::from_str(s).wrap_err("Illegal license data")
 }
 
 pub fn date_from_epoch_millis(timestamp: &str) -> Result<String> {

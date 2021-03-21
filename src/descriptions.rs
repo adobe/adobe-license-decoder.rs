@@ -75,8 +75,15 @@ fn describe_operating_configs(ocs: &[OperatingConfig], verbose: bool) -> Result<
         println!("{: >2}: {}", i + 1, shorten_oc_file_name(&oc.filename)?);
         describe_app(-1, &oc.app_id, &oc.cert_group_id, verbose);
         println!("    Install date: {}", &oc.install_datetime);
-        if let Ok(date) = oc.get_cached_expiry() {
-            println!("    Local expiry date: {}", date_from_epoch_millis(&date)?)
+        if verbose {
+            if let Ok(date) = oc.get_cached_expiry() {
+                println!(
+                    "    Cached activation expires: {}",
+                    date_from_epoch_millis(&date)?
+                )
+            } else {
+                println!("    No cached activation")
+            }
         }
     }
     Ok(())

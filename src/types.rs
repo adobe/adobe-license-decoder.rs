@@ -179,11 +179,15 @@ impl OperatingConfig {
         let username = "App Info";
         let keyring = keyring::Keyring::new(&service, &username);
         let note = keyring.get_password()?;
-        let json: JsonMap = serde_json::from_str(&note)?;
-        let payload = json["asnp"]["payload"].as_str().ok_or_else(err)?;
+        let json = json_from_str(&note)?;
+        let asnp = json["asnp"].as_str().ok_or_else(err)?;
+        let json = json_from_str(asnp)?;
+        let payload = json["payload"].as_str().ok_or_else(err)?;
         let json = json_from_base64(payload)?;
-        let expiry_date = json["licenseExpiryTimestamp"].as_str().ok_or_else(err)?;
-        Ok(expiry_date.to_string())
+        let legacy_profile = json["legacyProfile"].as_str().ok_or_else(err)?;
+        let json = json_from_str(legacy_profile)?;
+        let timestamp = json["effectiveEndTimestamp"].as_i64().ok_or_else(err)?;
+        Ok(timestamp.to_string())
     }
 }
 
