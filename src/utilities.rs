@@ -128,7 +128,7 @@ mod tests {
 
     #[test]
     fn test_file_info_from_name_and_extension() {
-        let fi = FileInfo::from_name_and_extension("foo", "bar");
+        let fi = FileInfo::from_name_and_extension("foo", "bar").unwrap();
         assert_eq!(fi.filename, "foo.bar");
         assert_eq!(fi.pathname, "foo.bar");
     }
