@@ -13,23 +13,25 @@ mod utilities;
 
 use cli::{Opt, DEFAULT_CONFIG_DIR};
 use descriptions::{describe_directory, describe_file};
-use eyre::{Result, WrapErr};
+use eyre::Result;
 use structopt::StructOpt;
 use utilities::FileInfo;
 
 fn main() -> Result<()> {
     let opt: Opt = Opt::from_args();
-    let info = if let Some(path) = opt.path.as_ref() {
-        FileInfo::from_path(path)
-            .wrap_err_with(|| format!("Can't find directory: {}", path))?
+    if let Ok(info) = FileInfo::from_path(&opt.path) {
+        if info.is_directory {
+            describe_directory(&info, opt.verbose)?;
+        } else {
+            describe_file(&info, opt.verbose)?;
+        }
     } else {
-        FileInfo::from_path(DEFAULT_CONFIG_DIR)
-            .wrap_err("There are no licenses installed on this computer")?
+        if opt.path.eq_ignore_ascii_case(DEFAULT_CONFIG_DIR) {
+            eprintln!("Error: There are no licenses installed on this computer")
+        } else {
+            eprintln!("Error: No such directory: {}", &opt.path)
+        }
+        std::process::exit(1);
     };
-    if info.is_directory {
-        describe_directory(&info, opt.verbose)?;
-    } else {
-        describe_file(&info, opt.verbose)?;
-    }
     Ok(())
 }

@@ -28,7 +28,8 @@ pub struct Opt {
     pub verbose: bool,
 
     /// path to directory or file to decode
-    pub path: Option<String>,
+    #[structopt(default_value = DEFAULT_CONFIG_DIR)]
+    pub path: String,
 }
 
 #[cfg(test)]

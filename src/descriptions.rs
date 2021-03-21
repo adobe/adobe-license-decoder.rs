@@ -32,7 +32,7 @@ pub fn describe_directory(info: &FileInfo, verbose: bool) -> Result<()> {
     }
     if ocs.is_empty() {
         Err(eyre!(
-            "No license files found in directory: '{}'",
+            "No license files found in directory: {}",
             info.pathname
         ))
     } else {
