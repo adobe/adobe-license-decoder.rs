@@ -75,10 +75,6 @@ pub fn u64decode(s: &str) -> Result<String> {
     String::from_utf8(bytes).wrap_err("Illegal license encoding")
 }
 
-pub fn u64encode(s: &str) -> Result<String> {
-    Ok(base64::encode_config(s, base64::URL_SAFE_NO_PAD))
-}
-
 pub fn json_from_base64(s: &str) -> Result<JsonMap> {
     serde_json::from_str(&u64decode(s)?).wrap_err("Illegal license data")
 }
