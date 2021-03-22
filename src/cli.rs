@@ -23,9 +23,10 @@ pub const DEFAULT_CONFIG_DIR: &str = if cfg!(target_os = "macos") {
 /// If you specify a directory, it will decode all the license files
 /// or preconditioning files found in that directory.
 pub struct Opt {
-    /// Output additional license data (e.g., census codes).
-    /// Specify it more than once (`-vv`) to look for local activations.
-    #[structopt(short, parse(from_occurrences))]
+    /// Output additional data about each package (e.g., census codes).
+    /// Specify this option more than once (-vv) to look for local activations
+    /// of each installed license being decoded.
+    #[structopt(short, long, parse(from_occurrences))]
     pub verbose: i32,
 
     /// path to directory or file to decode
