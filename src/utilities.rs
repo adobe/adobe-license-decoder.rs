@@ -98,7 +98,7 @@ pub fn date_from_epoch_millis(timestamp: &str) -> Result<String> {
 pub fn json_from_file(info: &FileInfo) -> Result<JsonMap> {
     let file =
         File::open(Path::new(&info.pathname)).wrap_err("Can't read license file")?;
-    Ok(serde_json::from_reader(&file).wrap_err("Can't parse license data")?)
+    serde_json::from_reader(&file).wrap_err("Can't parse license data")
 }
 
 pub fn shorten_oc_file_name(name: &str) -> Result<String> {

@@ -95,7 +95,7 @@ impl OperatingConfig {
                     .as_str()
                     .ok_or_else(err)?
                     .to_string();
-                FrlLAN(server)
+                FrlLan(server)
             }
             "FRL_ISOLATED" => {
                 let values = payload["asnpData"]["customerCertSignedValues"]["values"]
@@ -213,7 +213,7 @@ pub enum DeploymentMode {
     FrlOnline(String),
     FrlOffline,
     FrlIsolated(Vec<String>),
-    FrlLAN(String),
+    FrlLan(String),
     Sdl,
     Unknown(String),
 }
@@ -227,7 +227,7 @@ impl std::fmt::Display for DeploymentMode {
                 1 => "FRL Isolated (1 census code)".fmt(f),
                 n => format!("FRL Isolated ({} census codes)", n).fmt(f),
             },
-            FrlLAN(server) => format!("FRL LAN (server: {})", server).fmt(f),
+            FrlLan(server) => format!("FRL LAN (server: {})", server).fmt(f),
             Sdl => "SDL".fmt(f),
             Unknown(s) => s.fmt(f),
         }
@@ -237,8 +237,8 @@ impl std::fmt::Display for DeploymentMode {
 pub enum Precedence {
     AcrobatStandard = 70,
     AcrobatPro = 100,
-    CCSingleApp = 80,
-    CCAllApps = 90,
+    CcSingleApp = 80,
+    CcAllApps = 90,
 }
 
 impl std::fmt::Display for Precedence {
@@ -246,8 +246,8 @@ impl std::fmt::Display for Precedence {
         match self {
             AcrobatStandard => "70 (Acrobat Standard)".fmt(f),
             AcrobatPro => "100 (Acrobat Pro)".fmt(f),
-            CCSingleApp => "80 (CC Single App)".fmt(f),
-            CCAllApps => "90 (CC All Apps)".fmt(f),
+            CcSingleApp => "80 (CC Single App)".fmt(f),
+            CcAllApps => "90 (CC All Apps)".fmt(f),
         }
     }
 }
@@ -257,8 +257,8 @@ impl Precedence {
         match s {
             "70" => Ok(AcrobatStandard),
             "100" => Ok(AcrobatPro),
-            "80" => Ok(CCSingleApp),
-            "90" => Ok(CCAllApps),
+            "80" => Ok(CcSingleApp),
+            "90" => Ok(CcAllApps),
             _ => Err(eyre!("Precedence ({}) must be 70, 80, 90, or 100", s)),
         }
     }
