@@ -10,6 +10,8 @@ use self::DeploymentMode::*;
 use self::Precedence::*;
 use crate::utilities::*;
 use eyre::{eyre, Result, WrapErr};
+use std::io::Read;
+use std::str::from_utf8;
 
 pub struct OperatingConfig {
     pub filename: String,
@@ -156,8 +158,24 @@ impl OperatingConfig {
     }
 
     pub fn from_ccp_file(info: &FileInfo) -> Result<Vec<OperatingConfig>> {
-        let html =
-            std::fs::read_to_string(&info.pathname).wrap_err("Cannot read ccp file")?;
+        let bytes = std::fs::read(&info.pathname).wrap_err("Cannot read ccp file")?;
+        // on Windows, this may be a zip file, and we need to extract
+        // the PkgConfig.xml file from it
+        let reader = std::io::Cursor::new(&bytes);
+        let html = if let Ok(mut archive) = zip::ZipArchive::new(reader) {
+            let mut file = archive
+                .by_name("PkgConfig.xml")
+                .map_err(|e| eyre!(e))
+                .wrap_err("Can't find configuration data in ccp archive")?;
+            let mut buffer = String::new();
+            file.read_to_string(&mut buffer)
+                .wrap_err("Can't read configuration data from ccp archive")?;
+            buffer
+        } else {
+            from_utf8(&bytes)
+                .wrap_err("Invalid ccp file format")?
+                .to_string()
+        };
         let doc = visdom::Vis::load(&html)
             .map_err(|e| eyre!("{}", e))
             .wrap_err("Cannot parse ccp file")?;
