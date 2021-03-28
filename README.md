@@ -26,19 +26,19 @@ If you have some other directory that you want it to look in for license files (
 adobe-license-decoder customer-license-files
 ```
 
-If you have a license-only package, you can invoke the decoder on the directory containing that package as well. For example:
+If you have a package, you can invoke the decoder on the package directory (expanded zip file) as well. This works both for packages that include apps and for license-only packages. For example:
 
 ```
 adobe-license-decoder my-package-dir
 ```
 
-Finally, if you have a single license file (a file whose name ends in `operatingconfig`) or a single preconditioning file (a `JSON` file that can be installed by the `adobe-licensing-toolkit`) that you want decoded, you can specify the name of the file itself instead of a directory, as in:
+Finally, if you have a single license file (a file whose name ends in `operatingconfig`) or a single preconditioning file (a file that can be installed by the `adobe-licensing-toolkit`) that you want decoded, you can specify the name of the file itself instead of a directory, as in:
 
 ```
 adobe-license-decoder ngl-preconditioning-data.json
 ```
 
-In addition to the (optional) directory or file argument, the decoder takes an optional `-v` flag that causes the report it produces to be more verbose.  The next section details what this flag does.
+In addition to the (optional) directory or file argument, the decoder takes an optional `-v` flag that causes the report it produces to give more information about packages, such as showing the specific census codes in FRL Isolated packages.  If you specify this flag more than once (`-vv`), then the decoder will look in the current user's credential store to find locally cached licenses for installed packages.  The next section shows some examples of the additional information.
 
 ## How to Read the Decoder's Reports
 
@@ -162,7 +162,7 @@ Filenames (shown with '...' where the npdId appears):
     Install date: 2020-12-27 21:01:39 -08:00
 ```
 
-Finally, let's look at a run where we have installed a LAN package on top of the Isolated package.  (As above, we run the decoder over the package, then we install it, then we run the decoder to see what license files are on the machine.).  Because the LAN package and the Isolated package are both single-app packages, their licenses have the same precedence, so where there are two license files for the same application (in this case, Bridge), the LAN package will win because it has the later installation date.  It's in situations like these - where customers have installed two different packages on top of each other, that the decoder tool can really come in handy in understanding what's happened and in getting it fixed.
+Next, let's look at a run where we have installed a LAN package on top of the Isolated package.  (As above, we run the decoder over the package, then we install it, then we run the decoder to see what license files are on the machine.).  Because the LAN package and the Isolated package are both single-app packages, their licenses have the same precedence, so where there are two license files for the same application (in this case, Bridge), the LAN package will win because it has the later installation date.  It's in situations like these - where customers have installed two different packages on top of each other, that the decoder tool can really come in handy in understanding what's happened and in getting it fixed.
 
 ```
 $ adobe-license-decoder lan-illustrator
@@ -199,6 +199,26 @@ Filenames (shown with '...' where the npdId appears):
  4: UGhvdG9zaG9wMXt9MjAxODA3MjAwNA-...-80.operatingconfig
     App ID: Photoshop1
     Install date: 2020-12-27 21:01:39 -08:00
+```
+
+Finally, let's look at a case where we have installed a Online package that uses an FRL proxy, and let's specify the `-vv` flag to look for locally cached licenses.  As you can see, the Photoshop application has been activated (and its expiration date is listed), but the Bridge application has not.  (On Mac, this command will typically pop up a dialog asking for permission to read each license in the login keychain.  Specify `Always Allow` in this dialog to prevent the dialog from appearing again.)
+
+```
+$ adobe-license-decoder -vv
+License files for npdId: ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi:
+    Package UUID: 854b598d-9156-446b-aed6-0d5dc6fead0b
+    License type: FRL Online (server: https://frl-proxy.brotsky.net:8443)
+    License expiry date: controlled by server
+    Precedence: 80 (CC Single App)
+Filenames (shown with '...' where the npdId appears):
+ 1: QnJpZGdlMXt9MjAxODA3MjAwNA-...-80.operatingconfig
+    App ID: Bridge1, Certificate Group: 2018072004
+    Install date: 2021-02-17 22:49:32 -08:00
+    No cached activation
+ 2: UGhvdG9zaG9wMXt9MjAxODA3MjAwNA-...-80.operatingconfig
+    App ID: Photoshop1, Certificate Group: 2018072004
+    Install date: 2021-02-17 22:49:31 -08:00
+    Cached activation expires: 2021-10-05
 ```
 
 ## Support
