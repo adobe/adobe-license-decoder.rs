@@ -133,8 +133,6 @@ impl OperatingConfig {
             .as_str()
         {
             self.expiry_date = date_from_epoch_millis(expiry_timestamp)?;
-        } else if let Ok(expiry_timestamp) = self.get_cached_expiry() {
-            self.expiry_date = date_from_epoch_millis(&expiry_timestamp)?;
         } else {
             self.expiry_date = "controlled by server".to_string();
         }
@@ -193,10 +191,7 @@ impl OperatingConfig {
         let cert_name =
             format!("{}03", &self.cert_group_id[..self.cert_group_id.len() - 2]);
         let note_key = u64encode(&format!("{}{{}}{}", app_name, &cert_name))?;
-        let service = format!("Adobe App Info ({})", &note_key);
-        let username = "App Info";
-        let keyring = keyring::Keyring::new(&service, &username);
-        let note = keyring.get_password()?;
+        let note = get_saved_credential(&note_key)?;
         let json = json_from_str(&note)?;
         let asnp = json["asnp"].as_str().ok_or_else(err)?;
         let json = json_from_str(asnp)?;
@@ -206,6 +201,33 @@ impl OperatingConfig {
         let json = json_from_str(legacy_profile)?;
         let timestamp = json["effectiveEndTimestamp"].as_i64().ok_or_else(err)?;
         Ok(timestamp.to_string())
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn get_saved_credential(key: &str) -> Result<String> {
+    let service = format!("Adobe App Info ({})", &key);
+    let keyring = keyring::Keyring::new(&service, "App Info");
+    keyring.get_password().map_err(|e| eyre!(e))
+}
+
+#[cfg(target_os = "windows")]
+fn get_saved_credential(key: &str) -> Result<String> {
+    let mut result = String::new();
+    for i in 1..100 {
+        let service = format!("Adobe App Info ({})(Part{})", key, i);
+        let keyring = keyring::Keyring::new(&service, "App Info");
+        let note = keyring.get_password_for_target(&service);
+        if let Ok(note) = note {
+            result.push_str(note.trim());
+        } else {
+            break;
+        }
+    }
+    if result.is_empty() {
+        Err(eyre!("No credential data found"))
+    } else {
+        Ok(result)
     }
 }
 
