@@ -133,8 +133,6 @@ impl OperatingConfig {
             .as_str()
         {
             self.expiry_date = date_from_epoch_millis(expiry_timestamp)?;
-        } else if let Ok(expiry_timestamp) = self.get_cached_expiry() {
-            self.expiry_date = date_from_epoch_millis(&expiry_timestamp)?;
         } else {
             self.expiry_date = "controlled by server".to_string();
         }
@@ -217,9 +215,10 @@ fn get_saved_credential(key: &str) -> Result<String> {
 fn get_saved_credential(key: &str) -> Result<String> {
     let mut result = String::new();
     for i in 1..100 {
-        let service = format!("Adobe App Info ({})(Part{})", &key, i);
+        let service = format!("Adobe App Info ({})(Part{})", key, i);
         let keyring = keyring::Keyring::new(&service, "App Info");
-        if let Ok(note) = keyring.get_password() {
+        let note = keyring.get_password_for_target(&service);
+        if let Ok(note) = note {
             result.push_str(note.trim());
         } else {
             break;

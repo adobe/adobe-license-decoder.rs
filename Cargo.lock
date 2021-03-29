@@ -410,8 +410,7 @@ checksum = "dd25036021b0de88a0aff6b850051563c6516d0bf53f8638938edbb9de732736"
 [[package]]
 name = "keyring"
 version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2bcd64f48199f69993c705fd2f76882e53969db93bc6345021bc8bb6462a9ffa"
+source = "git+https://github.com/adobeDan/keyring-rs?branch=master#5b3cefbc74a604c803ced09608b39529c9c86801"
 dependencies = [
  "byteorder",
  "secret-service",
