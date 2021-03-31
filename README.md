@@ -26,13 +26,13 @@ If you have some other directory that you want it to look in for license files (
 adobe-license-decoder customer-license-files
 ```
 
-If you have a package, you can invoke the decoder on the package directory (expanded zip file) as well. This works both for packages that include apps and for license-only packages. For example:
+If you have a package, you can invoke the decoder on the package directory (the root of the expanded zip file) as well. This works both for packages that include apps and for license-only packages. For example:
 
 ```
-adobe-license-decoder my-package-dir
+adobe-license-decoder online-illustrator_en_US
 ```
 
-Finally, if you have a single license file (a file whose name ends in `operatingconfig`) or a single preconditioning file (a file that can be installed by the `adobe-licensing-toolkit`) that you want decoded, you can specify the name of the file itself instead of a directory, as in:
+Finally, if you have a single license file (a file whose name ends in `operatingconfig`), a single preconditioning file (a JSON file that can be installed by the `adobe-licensing-toolkit`), or a single package description file (a file whose name ends in `.ccp`) that you want decoded, you can specify the name of the file itself instead of a directory, as in:
 
 ```
 adobe-license-decoder ngl-preconditioning-data.json
