@@ -7,33 +7,38 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        arch: [x86_64-apple-darwin, aarch64-apple-darwin, x86_64-pc-windows-msvc]
+        include:
+          - arch: x86_64-pc-windows-msvc
+            os: windows-latest
+          - arch: x86_64-apple-darwin
+            os: macos-latest
+          - arch: aarch64-apple-darwin
+            os: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: upgrade XCode
+        uses: maxim-lobanov/setup-xcode@v1
+        if: ${{ matrix.os == 'macos-latest' }}
+        with:
+          xcode-version: latest-stable
 
-      - uses: actions-rs/toolchain@v1
+      - name: XCode build target to aarch64-apple-darwin
+        run: |
+          echo SDKROOT=$(xcrun -sdk macosx11.1 --show-sdk-path) >> $GITHUB_ENV
+          echo MACOSX_DEPLOYMENT_TARGET=$(xcrun -sdk macosx11.1 --show-sdk-platform-version) >> $GITHUB_ENV
+        if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
+
+      - name: fetch head
+        uses: actions/checkout@v2
+
+      - name: install Rust toolchain
+        uses: actions-rs/toolchain@v1
         with:
           profile: minimal
+          target: ${{ matrix.arch }}
           toolchain: stable
-          override: true
           components: rustfmt, clippy
-
-      - name: Build debug
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-
-      - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-
-      - name: Build release locked
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --locked
 
       - name: Format check
         uses: actions-rs/cargo@v1
@@ -47,10 +52,29 @@ jobs:
           command: clippy
           args: -- -D warnings
 
+      - name: Build debug
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target ${{ matrix.arch }}
+
+      - name: Test
+        uses: actions-rs/cargo@v1
+        if: ${{ matrix.arch != 'aarch64-apple-darwin' }}
+        with:
+          command: test
+          args: --target ${{ matrix.arch }}
+
+      - name: Build release locked
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args:  --target ${{ matrix.arch }} --release --locked
+
       - name: Upload executables
         uses: actions/upload-artifact@v2
         with:
           name: executables
           path: |
-            target/*/adobe-license-decoder
-            target/*/adobe-license-decoder.exe
+            target/**/adobe-license-decoder
+            target/**/adobe-license-decoder.exe
