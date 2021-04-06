@@ -10,33 +10,54 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        arch: [x86_64-apple-darwin, aarch64-apple-darwin, x86_64-pc-windows-msvc]
         include:
-          - os: windows-latest
-            artifact_name: adobe-license-decoder.exe
-            asset_name: adobe-license-decoder.exe
-          - os: macos-latest
-            artifact_name: adobe-license-decoder
-            asset_name: adobe-license-decoder
+          - arch: x86_64-pc-windows-msvc
+            os: windows-latest
+            executable_name: adobe-license-decoder.exe
+            posted_name: adobe-license-decoder.windows_x86_64.exe
+          - arch: x86_64-apple-darwin
+            os: macos-latest
+            executable_name: adobe-license-decoder
+            posted_name: adobe-license-decoder.mac_x86_64
+          - arch: aarch64-apple-darwin
+            os: macos-latest
+            executable_name: adobe-license-decoder
+            posted_name: adobe-license-decoder.mac_arm64
 
     steps:
-      - uses: actions/checkout@v2
+      - name: upgrade XCode
+        uses: maxim-lobanov/setup-xcode@v1
+        if: ${{ matrix.os == 'macos-latest' }}
+        with:
+          xcode-version: latest-stable
 
-      - uses: actions-rs/toolchain@v1
+      - name: XCode build target to aarch64-apple-darwin
+        run: |
+          echo SDKROOT=$(xcrun -sdk macosx11.1 --show-sdk-path) >> $GITHUB_ENV
+          echo MACOSX_DEPLOYMENT_TARGET=$(xcrun -sdk macosx11.1 --show-sdk-platform-version) >> $GITHUB_ENV
+        if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
+
+      - name: fetch head
+        uses: actions/checkout@v2
+
+      - name: install Rust toolchain
+        uses: actions-rs/toolchain@v1
         with:
           profile: minimal
+          target: ${{ matrix.arch }}
           toolchain: stable
-          override: true
 
       - name: Build release locked
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --locked
+          args:  --target ${{ matrix.arch }} --release --locked
 
       - name: Post release executable
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/${{ matrix.artifact_name }}
-          asset_name: ${{ matrix.asset_name }}
+          file: target/${{ matrix.arch }}/release/${{ matrix.executable_name }}
+          asset_name: ${{ matrix.posted_name }}
           tag: ${{ github.ref }}
