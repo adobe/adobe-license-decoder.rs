@@ -14,7 +14,7 @@ Enter the `adobe-license-decoder`, a different command-line tool that can tell y
 
 ## Installation
 
-The adobe-license-decoder is a command line tool that doesn't require any special privileges.  So to install it on a given machine, just download the Mac or Win binary from the [latest release page](https://github.com/adobeDan/adobe-license-decoder.rs/releases/latest).  Those can be used from any command line.
+The adobe-license-decoder is a command line tool that doesn't require any special privileges.  So to install it on a given machine, just download the appropriate Mac or Win binary from the [latest release page](https://github.com/adobeDan/adobe-license-decoder.rs/releases/latest), rename it without the platform suffix (to `adobe-license-decoder` or `adobe-license-decoder.exe`), and put it somewhere in your command-line search path.  It can then be invoked as `adobe-license-decoder` from any command line (examples below).
 
 ## Usage
 
