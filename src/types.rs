@@ -187,17 +187,35 @@ impl OperatingConfig {
     pub fn get_cached_expiry(&self) -> Result<String> {
         let err = || eyre!("Malformed license");
         let app_name = self.app_id.as_str();
-        // adjust the cert name to end with 03 because apps always use that cert group
-        let cert_name =
-            format!("{}03", &self.cert_group_id[..self.cert_group_id.len() - 2]);
+        // each type of licensing uses a different cert group for cached data
+        let cert_group_base = &self.cert_group_id[..self.cert_group_id.len() - 2];
+        let cert_group_suffix = match self.mode {
+            FrlOnline(_) => "03",
+            FrlOffline => "06",
+            FrlIsolated(_) => "06",
+            FrlLan(_) => "09",
+            Sdl => "13",
+            Unknown(_) => &self.cert_group_id[self.cert_group_id.len() - 2..],
+        };
+        let cert_name = format!("{}{}", cert_group_base, cert_group_suffix);
         let note_key = u64encode(&format!("{}{{}}{}", app_name, &cert_name))?;
         let note = get_saved_credential(&note_key)?;
         let json = json_from_str(&note)?;
+        // npdId is in the customer ASNP
+        let asnp = json["custAsnp"].as_str().ok_or_else(err)?;
+        let inner_json = json_from_str(asnp)?;
+        let payload = inner_json["payload"].as_str().ok_or_else(err)?;
+        let inner_json = json_from_base64(payload)?;
+        let npd_id = inner_json["npdId"].as_str().ok_or_else(err)?;
+        if !self.npd_id.eq_ignore_ascii_case(npd_id) {
+            return Err(eyre!("Cached npdId does not match license npdId"));
+        }
+        // legacy profile is in the Adobe ASNP
         let asnp = json["asnp"].as_str().ok_or_else(err)?;
-        let json = json_from_str(asnp)?;
-        let payload = json["payload"].as_str().ok_or_else(err)?;
-        let json = json_from_base64(payload)?;
-        let legacy_profile = json["legacyProfile"].as_str().ok_or_else(err)?;
+        let inner_json = json_from_str(asnp)?;
+        let payload = inner_json["payload"].as_str().ok_or_else(err)?;
+        let inner_json = json_from_base64(payload)?;
+        let legacy_profile = inner_json["legacyProfile"].as_str().ok_or_else(err)?;
         let json = json_from_str(legacy_profile)?;
         let timestamp = json["effectiveEndTimestamp"].as_i64().ok_or_else(err)?;
         Ok(timestamp.to_string())
