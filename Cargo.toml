@@ -1,8 +1,9 @@
 [package]
-name = "adobe_license_decoder"
-version = "1.4.0"
+name = "adobe_license_toolbox"
+version = "1.5.0"
 authors = ["Daniel Brotsky <dbrotsky@adobe.com>"]
 edition = "2018"
+default-run = "adobe-license-decoder"
 
 [dependencies]
 structopt = { version = "0.3.21", features = ["wrap_help"] }
@@ -15,7 +16,3 @@ keyring = { git = "https://github.com/adobeDan/keyring-rs", branch = "master" }
 eyre = "0.6.5"
 visdom = "0.4.0"
 zip = "0.5.11"
-
-[[bin]]
-name = "adobe-license-decoder"
-path = "src/main.rs"

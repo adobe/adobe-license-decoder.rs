@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe
+Copyright 2021 Adobe
 All Rights Reserved.
 
 NOTICE: Adobe permits you to use, modify, and distribute this file in
@@ -24,8 +24,8 @@ pub const DEFAULT_CONFIG_DIR: &str = if cfg!(target_os = "macos") {
 /// or preconditioning files found in that directory.
 pub struct Opt {
     /// Output additional data about each package (e.g., census codes).
-    /// Specify this option more than once (-vv) to look for local activations
-    /// of each installed license being decoded.
+    /// Specify this option more than once (-vv) to look in the credential
+    /// store for any locally-cached application licenses.
     #[structopt(short, long, parse(from_occurrences))]
     pub verbose: i32,
 
@@ -37,7 +37,7 @@ pub struct Opt {
 #[cfg(test)]
 mod tests {
     use super::DEFAULT_CONFIG_DIR;
-    use crate::utilities::FileInfo;
+    use adobe_license_toolbox::client::types::FileInfo;
 
     #[test]
     fn test_os() {

@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe
+Copyright 2021 Adobe
 All Rights Reserved.
 
 NOTICE: Adobe permits you to use, modify, and distribute this file in
@@ -9,9 +9,9 @@ it.
 use self::DeploymentMode::*;
 use self::Precedence::*;
 use crate::utilities::*;
+use chrono::{DateTime, Local};
 use eyre::{eyre, Result, WrapErr};
 use std::io::Read;
-use std::str::from_utf8;
 
 pub struct OperatingConfig {
     pub filename: String,
@@ -71,7 +71,7 @@ impl OperatingConfig {
 
     pub fn from_license_file(info: &FileInfo) -> Result<OperatingConfig> {
         let mut result = OperatingConfig::from_file_info(&info)?;
-        let data = json_from_file(&info)?;
+        let data = json_from_file(&info.pathname)?;
         result.update_from_license_data(&data)?;
         Ok(result)
     }
@@ -151,7 +151,7 @@ impl OperatingConfig {
     }
 
     pub fn from_preconditioning_file(info: &FileInfo) -> Result<Vec<OperatingConfig>> {
-        let data = json_from_file(&info)?;
+        let data = json_from_file(&info.pathname)?;
         OperatingConfig::from_preconditioning_json(&data)
     }
 
@@ -170,7 +170,7 @@ impl OperatingConfig {
                 .wrap_err("Can't read configuration data from ccp archive")?;
             buffer
         } else {
-            from_utf8(&bytes)
+            std::str::from_utf8(&bytes)
                 .wrap_err("Invalid ccp file format")?
                 .to_string()
         };
@@ -204,30 +204,54 @@ impl OperatingConfig {
     }
 }
 
-#[cfg(target_os = "macos")]
-fn get_saved_credential(key: &str) -> Result<String> {
-    let service = format!("Adobe App Info ({})", &key);
-    let keyring = keyring::Keyring::new(&service, "App Info");
-    keyring.get_password().map_err(|e| eyre!(e))
+pub struct FileInfo {
+    pub pathname: String,
+    pub filename: String,
+    pub name: String,
+    pub extension: String,
+    pub is_directory: bool,
+    pub mod_date: String,
 }
 
-#[cfg(target_os = "windows")]
-fn get_saved_credential(key: &str) -> Result<String> {
-    let mut result = String::new();
-    for i in 1..100 {
-        let service = format!("Adobe App Info ({})(Part{})", key, i);
-        let keyring = keyring::Keyring::new(&service, "App Info");
-        let note = keyring.get_password_for_target(&service);
-        if let Ok(note) = note {
-            result.push_str(note.trim());
-        } else {
-            break;
-        }
+impl FileInfo {
+    pub fn from_path(path: &str) -> Result<FileInfo> {
+        let path: String = shellexpand::full(path)?.into();
+        let info = std::fs::metadata(&path)?;
+        let path_object = std::path::Path::new(&path);
+        let is_directory = info.is_dir();
+        let mod_date: DateTime<Local> = info.modified()?.into();
+        Ok(FileInfo {
+            pathname: path.to_string(),
+            filename: path_object
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .to_string(),
+            name: path_object
+                .file_stem()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .to_string(),
+            extension: path_object
+                .extension()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .to_string(),
+            is_directory,
+            mod_date: mod_date.format("%Y-%m-%d %H:%M:%S %Z").to_string(),
+        })
     }
-    if result.is_empty() {
-        Err(eyre!("No credential data found"))
-    } else {
-        Ok(result)
+
+    pub fn from_name_and_extension(name: &str, extension: &str) -> Result<FileInfo> {
+        let filename = format!("{}.{}", name, extension);
+        Ok(FileInfo {
+            pathname: filename.to_string(),
+            filename,
+            name: name.into(),
+            extension: extension.into(),
+            is_directory: false,
+            mod_date: "Unknown".into(),
+        })
     }
 }
 
@@ -283,5 +307,37 @@ impl Precedence {
             "90" => Ok(CcAllApps),
             _ => Err(eyre!("Precedence ({}) must be 70, 80, 90, or 100", s)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_file_info_from_path() {
+        if let Ok(fi) = FileInfo::from_path("src") {
+            assert!(fi.is_directory);
+            assert!(fi.extension.is_empty());
+        } else {
+            panic!("Failed to create file info from 'src' directory.");
+        }
+        if let Ok(fi) = FileInfo::from_path("src/lib.rs") {
+            assert!(!fi.is_directory);
+            assert!(fi.extension.eq_ignore_ascii_case("rs"));
+            assert!(fi.name.eq_ignore_ascii_case("lib"));
+        } else {
+            panic!("Failed to create file info from 'src/main.rs' file");
+        }
+        if let Ok(_) = FileInfo::from_path("no-such-directory") {
+            panic!("Created file info for non-existent path");
+        }
+    }
+
+    #[test]
+    fn test_file_info_from_name_and_extension() {
+        let fi = FileInfo::from_name_and_extension("foo", "bar").unwrap();
+        assert_eq!(fi.filename, "foo.bar");
+        assert_eq!(fi.pathname, "foo.bar");
     }
 }

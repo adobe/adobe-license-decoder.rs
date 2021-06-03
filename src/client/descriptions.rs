@@ -6,8 +6,8 @@ NOTICE: Adobe permits you to use, modify, and distribute this file in
 accordance with the terms of the Adobe license agreement accompanying
 it.
 */
-use crate::types::{DeploymentMode, OperatingConfig};
-use crate::utilities::{date_from_epoch_millis, shorten_oc_file_name, FileInfo};
+use super::types::{DeploymentMode, FileInfo, OperatingConfig};
+use crate::utilities::{date_from_epoch_millis, shorten_oc_file_name};
 use eyre::{eyre, Result};
 use std::cmp::Ordering::Equal;
 

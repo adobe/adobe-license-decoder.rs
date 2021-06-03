@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe
+Copyright 2021 Adobe
 All Rights Reserved.
 
 NOTICE: Adobe permits you to use, modify, and distribute this file in
@@ -7,15 +7,12 @@ accordance with the terms of the Adobe license agreement accompanying
 it.
 */
 mod cli;
-mod descriptions;
-mod types;
-mod utilities;
 
+use adobe_license_toolbox::client::descriptions::{describe_directory, describe_file};
+use adobe_license_toolbox::client::types::FileInfo;
 use cli::{Opt, DEFAULT_CONFIG_DIR};
-use descriptions::{describe_directory, describe_file};
 use eyre::Result;
 use structopt::StructOpt;
-use utilities::FileInfo;
 
 fn main() -> Result<()> {
     let opt: Opt = Opt::from_args();
