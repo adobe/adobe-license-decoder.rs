@@ -24,6 +24,10 @@ fn main() {
         );
         println!(
             "cargo:rustc-link-lib=static={}",
+            format!("sscp-{}", &target_arch)
+        );
+        println!(
+            "cargo:rustc-link-lib=static={}",
             format!("awg-ngl-{}", &target_arch)
         );
         println!("cargo:rustc-link-lib={}", "c++");

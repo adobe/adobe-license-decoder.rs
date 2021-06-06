@@ -16,3 +16,4 @@ keyring = { git = "https://github.com/adobeDan/keyring-rs", branch = "master" }
 eyre = "0.6.5"
 visdom = "0.4.0"
 zip = "0.5.11"
+sha2 = "0.9.5"
