@@ -12,15 +12,9 @@ fn main() {
     if target_os.eq_ignore_ascii_case("macos") {
         let library_path = format!("rsrc/libraries/{}-{}", &target_os, &target_arch);
         println!("cargo:rustc-link-search=native={}", &library_path);
-        println!("cargo:rustc-link-lib=static={}", "sscp");
-        println!("cargo:rustc-link-lib=dylib={}", "c++");
-        // println!("cargo:rustc-link-lib=framework={}", "Cocoa");
-        println!("cargo:rustc-link-lib=framework={}", "CoreFoundation");
-        // println!("cargo:rustc-link-lib=framework={}", "CoreServices");
-        // println!("cargo:rustc-link-lib=framework={}", "CoreVideo");
-        println!("cargo:rustc-link-lib=framework={}", "IOKit");
-        // println!("cargo:rustc-link-lib=framework={}", "Security");
-        // println!("cargo:rustc-link-lib=framework={}", "SystemConfiguration");
-        // println!("cargo:rustc-link-lib=framework={}", "Webkit");
+        println!("cargo:rustc-link-lib=static=sscp");
+        println!("cargo:rustc-link-lib=dylib=c++");
+        println!("cargo:rustc-link-lib=framework=CoreFoundation");
+        println!("cargo:rustc-link-lib=framework=IOKit");
     }
 }
