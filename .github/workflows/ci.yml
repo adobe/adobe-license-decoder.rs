@@ -65,7 +65,7 @@ jobs:
         if: ${{ matrix.arch != 'aarch64-apple-darwin' }}
         with:
           command: test
-          args: --target ${{ matrix.arch }}
+          args: --target ${{ matrix.arch }} -- --nocapture
 
       - name: Build release locked
         uses: actions-rs/cargo@v1

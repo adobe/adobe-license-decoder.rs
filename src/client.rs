@@ -51,5 +51,6 @@ mod tests {
             sscp_id.as_str(),
             "NGL and SSCP device IDs don't match"
         );
+        println!("The (matching) NGL/SSCP device ID is: {}", sscp_id.as_str());
     }
 }
