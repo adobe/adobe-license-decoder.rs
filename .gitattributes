@@ -1,3 +1,2 @@
-*.a filter=lfs diff=lfs merge=lfs -text
 *.ccp linguist-detectable=false
 *.rs linguist-detectable=true
