@@ -16,8 +16,20 @@ mod libsscp {
         "fdaa587852001bad7bf1e81ed275b822d2bc812f4eeeab092da60b7066ab2bfa";
 
     extern "C" {
+        pub fn get_ngl_library_version(buf: *mut u8, len: i32) -> i32;
         pub fn get_ngl_hardware_id(buf: *mut u8, len: i32) -> i32;
     }
+}
+
+pub fn get_ngl_library_version() -> String {
+    let mut buf: [u8; 64] = [0; 64];
+    let len = unsafe { libsscp::get_ngl_library_version(buf.as_mut_ptr(), 64) };
+    if len < 0 {
+        panic!("NGL Library Version string longer than 64 characters");
+    }
+    std::str::from_utf8(&buf[0..len as usize])
+        .unwrap()
+        .to_string()
 }
 
 pub fn get_ngl_device_id() -> String {
@@ -38,7 +50,23 @@ pub fn get_ngl_device_id() -> String {
 #[cfg(test)]
 mod tests {
     use super::get_ngl_device_id;
+    use super::get_ngl_library_version;
     use super::libsscp;
+
+    #[test]
+    fn test_ngl_library_version() {
+        let ngl_lib_version = get_ngl_library_version();
+        let parts = ngl_lib_version.split(".");
+        assert_eq!(
+            parts.count(),
+            4,
+            "NGL Library version should have four segments"
+        );
+        println!(
+            "The NGL library version this matches is {}",
+            ngl_lib_version
+        );
+    }
 
     #[test]
     fn test_device_id_shape() {

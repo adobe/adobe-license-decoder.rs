@@ -7,7 +7,8 @@ accordance with the terms of the Adobe license agreement accompanying
 it.
 */
 
-pub mod cops;
-pub mod descriptions;
-pub mod sscp;
-pub mod types;
+/*
+Protocol implementations for the Cacheable Offline Profile Server
+ */
+
+// pub mod frl_online;
