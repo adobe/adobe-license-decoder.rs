@@ -7,6 +7,7 @@ default-run = "adobe-license-decoder"
 
 [dependencies]
 structopt = { version = "0.3.21", features = ["wrap_help"] }
+serde = { version = "1.0.126", features = ["derive"] }
 serde_json = "1.0.59"
 base64 = "0.13.0"
 shellexpand = "2.0.0"
@@ -17,4 +18,4 @@ eyre = "0.6.5"
 visdom = "0.4.0"
 zip = "0.5.11"
 sha2 = "0.9.5"
-reqwest = { version = "0.11.3", features = ["json"] }
+num-traits = "0.2.14"

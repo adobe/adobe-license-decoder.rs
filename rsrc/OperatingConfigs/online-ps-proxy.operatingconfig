@@ -1,0 +1,145 @@
+{
+  "ocSpecVersion": "1.1",
+  "signatures": [
+    {
+      "header": {
+        "contentSignatureAlg": "RS512",
+        "trustedCertFingerprintAlg": "SHA-512",
+        "trustedCertFingerprintIndex": 3,
+        "certificateDetails": [
+          {
+            "id": "NzIxNzVBNDg2MDMzODU2MDRGNjUwMEU4NUE4MTk4MDQ",
+            "subjectName": "Adobe Content Certificate 31-6",
+            "hexSerialNumber": "7a585466",
+            "sha1Hash": "B72BB8E40B34047E39A2CC55904661898DFA5C01",
+            "sequence": 1,
+            "downloadPath": "NzIxNzVBNDg2MDMzODU2MDRGNjUwMEU4NUE4MTk4MDQ-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi.der"
+          },
+          {
+            "id": "QkRFMTBFMkFDNEU1N0QyQUNDOTI5RjUzRTk4NzYxRjQ",
+            "subjectName": "Adobe Intermediate CA 31-4",
+            "hexSerialNumber": "562db720",
+            "sha1Hash": "10AA98F4A9907BFD76E49262466206402688749D",
+            "sequence": 2,
+            "downloadPath": "QkRFMTBFMkFDNEU1N0QyQUNDOTI5RjUzRTk4NzYxRjQ-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi.der"
+          }
+        ]
+      },
+      "signature": "vMWU1_nnSxamKfIESkMGDwa8mJfsIdRfCcufFRywRPu-toOltg68DM5joSbaDperU7mMHgGRRVcVZW2wjdXUOSltrJ2re8YTEfyTT3xlqaswjmv-NNozahG9_NRQDkH7ZIaALqK2NUXeFDhNsJue4TCbP-fx1ZlZ5WyP2lR3x0-iZkcmHtXsX5b6Ue2hmG_pRso3bApnaBaK_ui8b8sOi9c16hBrwSg5CEVSk-quny61ETzUgfP77tDkH17GqA1ZiUwvOFkGC5iD14NOBPuPXp_dJ7qu7m4wTiHaAg4VTVqoyZ9bcegvN2h9__m8PUmbf7jHy_ZBJrSPgxL75ElXgws2L_IculVh8qWEpXjeYKexuEDK7gyJjTBTRnIuu0fTny6xnaXzajHLD2DuOMRsMB6Jg8EWFQqH40gLS4WxQUVbp3WlmyAVFJHU_viigtqN8vS5NsLsac_R8u5bhYRpspVwrX-SExWiKgpkz581Sw6DLzIfphegtrxL6RrfjLq-5dZdvdxEsbW-b9PwC1buqiULvECHPZidWxhg92HSShx-v9mjJ8XzBDw_Pc4rBlyx0jRdwbM4kIVQOgiKxerY4ZDUyNW_v703WAz1rc7rBkWBIyNHHqAI8Afjrm-EUgzUkQXvgiqKqKS1b-qT8cEJX-k5X5YqSAI7WdYVz1JCX9c"
+    },
+    {
+      "header": {
+        "contentSignatureAlg": "RS512",
+        "trustedCertFingerprintAlg": "SHA-512",
+        "trustedCertFingerprintIndex": 2,
+        "certificateDetails": [
+          {
+            "id": "NzZEODIxQjM0MDZDMzE1RDQxNTlCMEM5RTI0MzcxOTg",
+            "subjectName": "Adobe Content Certificate 31-5",
+            "hexSerialNumber": "520a0b3c",
+            "sha1Hash": "3A936D232D4F1A0A6F64FC72292F7D7800670291",
+            "sequence": 1,
+            "downloadPath": "NzZEODIxQjM0MDZDMzE1RDQxNTlCMEM5RTI0MzcxOTg-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi.der"
+          },
+          {
+            "id": "Q0E1RDIyQzVCMTUyNDk0QzgxNjQ1MTBCNkYwN0M5NTQ",
+            "subjectName": "Adobe Intermediate CA 31-3",
+            "hexSerialNumber": "1fb8de29",
+            "sha1Hash": "A56E64CEE3F08CE8B68C1856A0C57DF17A5A86A6",
+            "sequence": 2,
+            "downloadPath": "Q0E1RDIyQzVCMTUyNDk0QzgxNjQ1MTBCNkYwN0M5NTQ-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi.der"
+          }
+        ]
+      },
+      "signature": "dr24JxMqeZa85uKvWbHFnEsMYRG0tOmv7INKa0NfCFUoFB8e9OKBBfKaZKpazUTuc3qDWpJ8E1h1G0D6ZaRG4En_hPzJvHhFdiVbb49T-E_VloK_kFW3pQYy4Q814Cm3jB4NdcutDQJgxgATUJvZPKjexEcNZ6CEUNewW0IKhALENFVSgP_Gs-Eh8fLIDo9gkqxlEK9bRzu7YWy-PVtRT4gG1_qL8PTsIiGIQ_z6LFAeydPfIwOFEp9VXvQx37DjtujrZxbpbPYTFryFN_foc4HmrT5jYUDr_c4vnxwbkybaNj7_EWCz2nbrmjvIMuztQe9V3XaqcKalodjuy8pGsylmbrHtAJy1GAIjc3OCPO8CxUVrTpNXFlfdUZO4wQFOTe0iZM3dYdHKAGb_nCUoi2SrjnJZIwTX-fxN6ejqTCbrqvTrOynlwl_KxKTltzQXos1ax2Yhxf48Rb_KPjzjyYM-uoeMp_D9SC4NP2mdBw4tVM8efoC23okNVxHk_F-IXG0rS6yfi_FMnk_eQi_6AQqB_pyK2x1koXVIJ0z17lnLK79RhEFf-5UWjqB8lJEShMLnPp3JEGvBox8JTzE5aaoVTjPaDEQRMrIF6G1__T8nEvO3S78QWDtmoyaMLRyHD7KPS0ARiDbmg6B5M-v0C8_QfkkLR3oxZHNfiItyWkI"
+    }
+  ],
+  "payload": {
+    "id": "44e67337-87b0-460e-9b53-0c4a2c450c7b",
+    "npdId": "ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi",
+    "nglAppId": "Photoshop1",
+    "npdPrecedence": 80,
+    "asnpData": {
+      "templateId": "T0RVMFlqVTVPR1F0T1RFMU5pMDBORFppTFdGbFpEWXRNR1ExWkdNMlptVmhaREJpe302ZmUxMWRiMy1lYjI0LTRlZjgtYjdlZi02MTJiN2U0NGE5Yzg",
+      "customerCertHeaders": [
+        {
+          "header": {
+            "contentSignatureAlg": "RS512",
+            "trustedCertFingerprintAlg": "SHA-512",
+            "trustedCertFingerprintIndex": 3,
+            "certificateDetails": [
+              {
+                "id": "RjI2RDM5MzIzMUFEOTdDQjNFODdDRDIxODEwQ0Q1OEI",
+                "subjectName": "Adobe Content Certificate 32-6",
+                "hexSerialNumber": "2c0366a",
+                "sha1Hash": "C6376207B4CCB640AC0DF14FBE7A59EF40833252",
+                "sequence": 1,
+                "downloadPath": "RjI2RDM5MzIzMUFEOTdDQjNFODdDRDIxODEwQ0Q1OEI-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi.der"
+              },
+              {
+                "id": "ODJEQ0YwQTc5MDU1OEMyRDk1RkM3RDk5REI3OUM5QTE",
+                "subjectName": "Adobe Intermediate CA 32-4",
+                "hexSerialNumber": "721f3d74",
+                "sha1Hash": "54103BEFB4B910DCB648D71C81065ABCC2D00F6F",
+                "sequence": 2,
+                "downloadPath": "ODJEQ0YwQTc5MDU1OEMyRDk1RkM3RDk5REI3OUM5QTE-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi.der"
+              }
+            ]
+          },
+          "signature": "{{customerSignature1}}"
+        },
+        {
+          "header": {
+            "contentSignatureAlg": "RS512",
+            "trustedCertFingerprintAlg": "SHA-512",
+            "trustedCertFingerprintIndex": 2,
+            "certificateDetails": [
+              {
+                "id": "NUJFQjZBOTUxMjgzNUNFRENFNzYyNTVCREY2OEVCNTg",
+                "subjectName": "Adobe Content Certificate 32-5",
+                "hexSerialNumber": "27cf4feb",
+                "sha1Hash": "F61BDBA72C58FB0C2599A732F7A8588D63CA1AC1",
+                "sequence": 1,
+                "downloadPath": "NUJFQjZBOTUxMjgzNUNFRENFNzYyNTVCREY2OEVCNTg-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi.der"
+              },
+              {
+                "id": "Mzc2OTAyOTc0RjE5MENFREMxNDA1QkNDRjBFMjZGNTU",
+                "subjectName": "Adobe Intermediate CA 32-3",
+                "hexSerialNumber": "58378019",
+                "sha1Hash": "3698B40E9714E58C79DD9A708223CB42607FDD62",
+                "sequence": 2,
+                "downloadPath": "Mzc2OTAyOTc0RjE5MENFREMxNDA1QkNDRjBFMjZGNTU-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi.der"
+              }
+            ]
+          },
+          "signature": "{{customerSignature2}}"
+        }
+      ],
+      "adobeCertSignedValues": null,
+      "customerCertSignedValues": null
+    },
+    "profileServerUrl": "https://frl-proxy.brotsky.net:8443",
+    "profileRequestPayloadParams": {
+      "deviceParams": [
+        "deviceId",
+        "osUserId",
+        "osName",
+        "osVersion",
+        "currentDate",
+        "enableVdiMarkerExists",
+        "isVirtualEnvironment",
+        "isOsUserAccountInDomain"
+      ],
+      "appParams": [
+        "nglAppId",
+        "nglAppVersion",
+        "nglLibVersion",
+        "currentAsnpId"
+      ]
+    },
+    "deploymentMode": "FRL_CONNECTED",
+    "branding": {
+      "name": null
+    }
+  }
+}

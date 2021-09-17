@@ -26,6 +26,53 @@ pub fn u64encode(s: &str) -> Result<String> {
     Ok(base64::encode_config(s, base64::URL_SAFE_NO_PAD))
 }
 
+pub mod base64_encoded_json {
+    // This module implements serialization and deserialization from
+    // base64-encoded JSON.  It's intended for embedding JSON as
+    // a field value inside of a larger data structure, but it can
+    // be used at top-level if, for example, your transmission
+    // medium can only handle ASCII strings.  The base64 encoding
+    // used is URL-safe and un-padded, so you can also use this to
+    // encode JSON in query strings.
+    use serde::de::DeserializeOwned;
+    use serde::Deserialize;
+    use serde::{Deserializer, Serialize, Serializer};
+
+    pub fn serialize<S, T>(val: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+        T: Serialize,
+    {
+        let json_str = serde_json::to_string(val).map_err(|e| {
+            serde::ser::Error::custom(format!("Can't serialize into JSON: {:?}", e))
+        })?;
+        let base64_str = base64::encode_config(&json_str, base64::URL_SAFE_NO_PAD);
+        serializer.serialize_str(&base64_str)
+    }
+
+    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+    where
+        D: Deserializer<'de>,
+        T: DeserializeOwned,
+    {
+        let base64_string = String::deserialize(deserializer)?;
+        // println!("base64 string starts: {:?}", &base64_string);
+        let json_bytes = base64::decode_config(&base64_string, base64::URL_SAFE_NO_PAD)
+            .map_err(|e| {
+            serde::de::Error::custom(&format!("Illegal base64: {:?}", e))
+        })?;
+        // println!("JSON bytes start: {:?}", &json_bytes);
+        serde_json::from_reader(json_bytes.as_slice()).map_err(|e| {
+            println!(
+                "Failure to parse looking for: {:?}",
+                std::any::type_name::<T>()
+            );
+            println!("JSON is: {}", &super::u64decode(&base64_string).unwrap());
+            serde::de::Error::custom(&format!("Can't deserialize from JSON: {:?}", e))
+        })
+    }
+}
+
 pub fn json_from_base64(s: &str) -> Result<JsonMap> {
     serde_json::from_str(&u64decode(s)?).wrap_err("Illegal payload data")
 }

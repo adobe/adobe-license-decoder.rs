@@ -1,0 +1,166 @@
+{
+  "ocSpecVersion": "1.1",
+  "signatures": [
+    {
+      "header": {
+        "contentSignatureAlg": "RS512",
+        "trustedCertFingerprintAlg": "SHA-512",
+        "trustedCertFingerprintIndex": 53,
+        "certificateDetails": [
+          {
+            "id": "QjIyRkJGRTQ4RkE2OUQzREJFNjU0RDU1RDJDMEY3QTQ",
+            "subjectName": "Adobe Content Certificate 41-6",
+            "hexSerialNumber": "6016d980",
+            "sha1Hash": "ACF138FEE5E2CF52298B8319C6B709230235EF36",
+            "sequence": 1,
+            "downloadPath": "QjIyRkJGRTQ4RkE2OUQzREJFNjU0RDU1RDJDMEY3QTQ-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5.der"
+          },
+          {
+            "id": "OUNDMDk0RDgwRkIzNTY0OURBQkI2RDM4NkUzRERFQjE",
+            "subjectName": "Adobe Intermediate CA 41-54",
+            "hexSerialNumber": "23f31e50",
+            "sha1Hash": "07291F3E83BB47517AFADCF38EE647A4FEE7766E",
+            "sequence": 2,
+            "downloadPath": "OUNDMDk0RDgwRkIzNTY0OURBQkI2RDM4NkUzRERFQjE-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5.der"
+          }
+        ]
+      },
+      "signature": "gHJApQOk0XF1PWOKzwAX86ISfAte6GW0fjmE01q8SVPga931zZFbzsUXR2rFrW3L9EtjGZ7_xCxml85gD-XXsHR_SkqFDeITdR4gRlpjuSNDxgIdw982u5iSHxyE_dquu8I0b8VJmAnqBt6YF0IplYCjEPXL5E9YZmsviGNfL38XJBa_nDOQDXmo8oNNsg5YoEBSkmAZ4foH4mvPrNjr03dS98wE9kPxZY080o6F6XUEOo_tlg6VPLjVtAAbP6FxFvFy16_1JQ2E1JcYxiWfwuWsyW6AkcFJd3YAO2K3IoE7huCTHNKFAr1SxthLBCu1juUE7RGZLMvXpXlCL15Eob_rk1234Eze1_YjvW37qHdnEDCuofNBdfdqdkHEK9O2DIayGrCz5D0IctV0SyyELJxRFJfnnf4TcJiOwREkO6y5f4qNSTw2NsYnZqDaBlnIpN-NDDuAr7zritjZT-pP2cywIPi8WT-d-0XodcURbp4769MjPLst0lUSbhk3vGu8ihuT0-Z6ct432DgCBjglMvVIy0rInpwYIJKe6morjzg6KIEd0IPy2f8JGDx9h5mH-a9Ja2Hw2SRcfzE3WNstJpbYi3qxejxk0LiLKwufFaOb4266r5kjcgyxtX_J8NrgvJ7gpIsRpwgbw6cepbyXMDLyQ_PIGEQ5bilDmDUnqOA"
+    },
+    {
+      "header": {
+        "contentSignatureAlg": "RS512",
+        "trustedCertFingerprintAlg": "SHA-512",
+        "trustedCertFingerprintIndex": 52,
+        "certificateDetails": [
+          {
+            "id": "QzBBN0Y2QkUyQTVFMjgyQTIyRjVGMzZGQ0VCNDk0M0Y",
+            "subjectName": "Adobe Content Certificate 41-5",
+            "hexSerialNumber": "3b2d714b",
+            "sha1Hash": "50EE649035457DA2F88CCA1CD03EF2C474767797",
+            "sequence": 1,
+            "downloadPath": "QzBBN0Y2QkUyQTVFMjgyQTIyRjVGMzZGQ0VCNDk0M0Y-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5.der"
+          },
+          {
+            "id": "NTQ0NkNFNTJDMEJDODJBQjczMTNERDhDOUE1MzMxNzU",
+            "subjectName": "Adobe Intermediate CA 41-53",
+            "hexSerialNumber": "5885b841",
+            "sha1Hash": "0936AF29B3231D1EA980B426AC9EE83C37C75856",
+            "sequence": 2,
+            "downloadPath": "NTQ0NkNFNTJDMEJDODJBQjczMTNERDhDOUE1MzMxNzU-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5.der"
+          }
+        ]
+      },
+      "signature": "JAra8SuoilnGDw243fEkZ5BiRjDaS1pz2uPqveF154Q4RbLm-r6wKsoEK5qU_hakHWp6OgGb91yPKDvqqLSx65HJRySGUcgnSPeieMWsmiv08FKi_PglgplUYbfkyDi8idU_3HTQAlXJ6ydD0pZGxdVskh5LyV_SstPlHbF99Yon3663Qa97CBgR_KuZKsfr5bjsDHFUbRmyorUMKGQs0SKJ_FaIs6HSrGZxPKfmuffUD6RerbrURlWHL7qiMumtZwGGcVUvaA2dfqAP1vsnO8YCmZJ0bXRQmHIdKusGPjvrJf4jEmRrWrMLICL3RfJpfhy3Ch-gykufRn-3iFwM3O9zrtybNZQndR28A4L6afQTzddcFdNg8ZYoFZsLM6-QOk7idppIx_5p1xqQk5sOuMflBIU6XJRZPbp1so4x25ctYHb3zmephFn9q9Jam8R6VAOY43zm6kDWOO23jxpCGdn14xBzoeHyJVJle28KTU_PrAvxzrE0nN7rP7phkMkTMqmhP5cXRYDybkgpIUYVey2-7l16cJ9kp41WdEKGqLEXDSbgkCjbhUL3Wgqw2gNmkpGXzX7rKiWdjdMVmJO939EJqP7TLjPEUXjP4_B5JztVYAZ_taP6_FWh_yg3iazzDufKSxE85PywMzuM-Yi3qWLSmpg3nPnsZJccBjoVqUc"
+    }
+  ],
+  "payload": {
+    "id": "ea04ef0e-5047-48c9-864a-77cb5c79a9bc",
+    "npdId": "MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5",
+    "nglAppId": "Illustrator1",
+    "npdPrecedence": 80,
+    "asnpData": {
+      "templateId": "TW1FME4yRTRNMlV0TmpGbU5TMDBObU0yTFdFME4ySXRPR0UwTmpjMk1UbGlPVEk1e305OTQ5MjQyNS01ZDdjLTRhOTItYmRlZS0zMDg4MWZmYjc2NDU",
+      "customerCertHeaders": [
+        {
+          "header": {
+            "contentSignatureAlg": "RS512",
+            "trustedCertFingerprintAlg": "SHA-512",
+            "trustedCertFingerprintIndex": 3,
+            "certificateDetails": [
+              {
+                "id": "MDBGRDk0MEZDNEI2MUNENzZDQjE2RENCNjU1QjM3RUE",
+                "subjectName": "Adobe Content Certificate 42-6",
+                "hexSerialNumber": "3bd6e09e",
+                "sha1Hash": "C18CFD9CF83D2B6D1A270B2641EBE6C8F73DB818",
+                "sequence": 1,
+                "downloadPath": "MDBGRDk0MEZDNEI2MUNENzZDQjE2RENCNjU1QjM3RUE-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5.der"
+              },
+              {
+                "id": "RkMzREQ3RjU4NzAxMUJFNEVBMTVCQjY1QjU4OENEOTM",
+                "subjectName": "Adobe Intermediate CA 42-4",
+                "hexSerialNumber": "63da3170",
+                "sha1Hash": "A0F03A00D16C89EB6ECA870E7EA5D39D02FBBCAC",
+                "sequence": 2,
+                "downloadPath": "RkMzREQ3RjU4NzAxMUJFNEVBMTVCQjY1QjU4OENEOTM-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5.der"
+              }
+            ]
+          },
+          "signature": "{{customerSignature1}}"
+        },
+        {
+          "header": {
+            "contentSignatureAlg": "RS512",
+            "trustedCertFingerprintAlg": "SHA-512",
+            "trustedCertFingerprintIndex": 2,
+            "certificateDetails": [
+              {
+                "id": "MTlEOUIxRjVFREY2NTdFQjQwMjdBNzFCREU4QTQ5Mjk",
+                "subjectName": "Adobe Content Certificate 42-5",
+                "hexSerialNumber": "2685bb9b",
+                "sha1Hash": "AD2041CDCB6E102C835FA9EA88B7E40208E7BB1C",
+                "sequence": 1,
+                "downloadPath": "MTlEOUIxRjVFREY2NTdFQjQwMjdBNzFCREU4QTQ5Mjk-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5.der"
+              },
+              {
+                "id": "MEU2NzMzRDkzNEI2NUIwQzI3MjFGOUQyNTFGRTAwMDU",
+                "subjectName": "Adobe Intermediate CA 42-3",
+                "hexSerialNumber": "27b14044",
+                "sha1Hash": "BD2B0FE22A163DFA2D920A3F1EC28DEA655D8E05",
+                "sequence": 2,
+                "downloadPath": "MEU2NzMzRDkzNEI2NUIwQzI3MjFGOUQyNTFGRTAwMDU-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5.der"
+              }
+            ]
+          },
+          "signature": "{{customerSignature2}}"
+        }
+      ],
+      "adobeCertSignedValues": {
+        "signatures": {
+          "signature1": "QUyblWwP0TWac23ysMnxS-utJIAFrhrU8zLx-lJruA6f7OqJEE4KULufPjkFPo2sjL1NIDkw5w1SLTx-72cCCKNnLt_aGgH9pWPl7jbQAauxUKKUq12ioezY_EtuObaOgyTiOYakjKaLkwryO7mls8OWbcCF-zs7i3SB0U5nlUuTxKI9G4Ar49y8IJHFfStpLRgrz4XINwHFRKVYBMv3m1nF48QANtiHFG7DWLT3fj0cQr49gQObOxu9Sveap8aoCii9Vg_1qCTK1AfJ9E6XzQ5VTmoRrzl_m4OPSWd8zYwPPmmV2N1ldl1q3yg9SV4q3HSBdtKDOBCtxKgQz8hL-hgTL-l5qftlWnfuwILyl3Tks9Lx5diF7NBXuj17FjVu22Mqu1VUJFBEChvw3v4jE-PqaZoDmrogCJY5fcy4osJnWp0AddwRU1qhgoC22VJsg5N45Pm5d-jk_qsHN2GkKFSlj1D7L_p5T0yYjdnEgfMz1i4EL56y2NUU9PIs_LzUIGvLBiliP5Lw8jd3vJCVctA5-VFZ13OkcqUg-06qnr5-iL5B0Q65RcqqQv4xkorE1CZ5Z8dJXG6N7gPLLBBPJDpPBRR4RF3t3_U-MdFKQ_Zmpg04sM8iypkofG5bNFl3nllIZ7iMw2ocuHtPwUHtFz2V2sEpTAAniSBbspWel1k",
+          "signature2": "giYCkyGqahNpCM2KuQEVaHe4uvc6zaMg1qm0DbiqTXP6ESCyeu5ZzK6guNeFSc8cWVhRC9qwVZ30i2w5KhtZwIETJrnrWwghy_V89QM2eeoJlQ9iHVV_rd-k31dCOjMN1v-u4bvxCCqqMF8aoQD7m4G4GubsoB1-MrnIxTAgyxooWukam-g6DYRUenssHIkn7WNqEYKurQLiT2fTNgkpb3KS81jGjc53Y965KgO-T5T3XxS_sjUTn9dNxSQge1C3GTiDlhik7P5nlOwMoxedYLam1G18LiBuxK8dQYoJlyjZdlvKdf8G1qRPEeVgnH4d_GpHzsEFPtMA_hZPErJmSu2C5T-ZS1_WuPl-pRS15GkmhCsyHg-03SSJckd7GkLskOo0r8LoDJ7ElGi0YssROYOuki1h3hcHrah-EN5onoDSLpvjcziGONtUVC1018jXkhjpcR5fHw9g2fl8GSHiuF4SfUwk-_5OoyU6WH7tgAyp3rYjk5OgfwXBc42ExmIW9Mqu2ahRohkpKA234-jHl6-vWVoUKeBKTEyOns5JYHR8_47X7Zo9QtETOFpdt4cLFTEGLMvswT42GEZbpkYusVUaOVEauXUAO87QHxCSPPfkqp46-ZHij_8JegVsoMHCvzqnf1LebeGE3D31c-HJHsWa9le3oTTGrsXnqvq40Z0"
+        },
+        "values": {
+          "licenseExpiryTimestamp": "1636009201000",
+          "enigmaData": "{\\\"productId\\\":34,\\\"serialKey\\\":\\\"103443945645747364663488\\\",\\\"clearSerialKey\\\":null,\\\"locale\\\":\\\"ALL\\\",\\\"associatedLocales\\\":\\\"ALL\\\",\\\"platform\\\":0,\\\"isk\\\":344041,\\\"customerId\\\":0,\\\"deliveryMethod\\\":3,\\\"pc\\\":true,\\\"rb\\\":false}",
+          "graceTime": "2592000000",
+          "profileStatus": "PROFILE_AVAILABLE",
+          "effectiveEndTimestamp": "1633417201000",
+          "licenseExpiryWarningStartTimestamp": "1635404401000",
+          "nglLibRefreshInterval": "27070587889",
+          "licenseId": "024657455A7F6EE5E1FA",
+          "licensedFeatures": "[\\\"IllustratorStock_1.0\\\",\\\"IllustratorStock_Base_1.0\\\",\\\"Illustrator_15.0\\\",\\\"Illustrator_16.0\\\",\\\"Illustrator_17.0\\\",\\\"Illustrator_Base_15.0\\\",\\\"Illustrator_Base_16.0\\\",\\\"Illustrator_Base_17.0\\\",\\\"AMT_SUBSCRIPTION_6.0\\\",\\\"Bridge_Base_4.0\\\",\\\"Bridge_Base_5.0\\\",\\\"Bridge_Base_6.0\\\",\\\"Bridge_MiniBridge_1.0\\\",\\\"Bridge_MiniBridge_2.0\\\",\\\"Bridge_MiniBridge_3.0\\\",\\\"Euclid_Base_1.0\\\",\\\"MobileCenter_Base_3.0\\\"]",
+          "appRefreshInterval": "27070587889",
+          "appEntitlementStatus": "SUBSCRIPTION"
+        }
+      },
+      "customerCertSignedValues": {
+        "signatures": {
+          "customerSignature2": "toTWNzwaB7-3OVW-IOSRGT5azYQNW-s8ckaAor22-GrA_EIl1MqNLyVeViPBV1Dbs_dgcO3YEqMiR2ac863YM9ysA6dYZQ3yi-yY8eiiobAZj84aNs03qlvwwpQxmd5xm11kVGBIR72a7NNFxB24u5ZiauE8cYI26cY_zEda7i9q6r4AUDFmvks3CZd0JkZgE_-QtJ_RizgsBdlL2rwkeoypdqBioWnSF4n5N_IdjEuDbHbnMKdTDRt7bPc2bawjqrAqhe4c_xWqaaDmxpU_LLeuvwze3pBxuh1AycaUHOK6nz75OJlf-kdlTBMXs5dcTGmW-AMqnY6WN_dkkeoQ_RpYKjwTFFfryJ08zmPKB03iKXpMq5rEbCEQVL0OnfLf87wrs49_lKTQVrXgKVi7Im--OTlysP43afFfnJroWqE90x2F9q6cbXyK8Wki-jg3Xukt7NMzoDpTnt_rGvZHaZkUBjlNqi8e7SpAS-8pPsWgagFCEHBKqAAF_7zt929PNX-vlfoLmyUK7jixf7-xeIGEsM5Aq525ctupZvDQoPplrtU2z-YbpH1NoCa9biv45P7g1oklmnwYBMfmGE0lXvmVHbVYGmz05-tJ91q7ln8BU9C9ycEeoVfeTLgStcQEaNbJyMYtC-BDqteV28go7GuTgdioc8eQLB6VtU88uYw",
+          "customerSignature1": "PiS_3gy6gkED9-eE6sQojbFVjPAzGEZuV06-bKJgVfXHducWHeRcFXJfNMnBwQkMeqLSiRgZstnZhjBFsC2QCH3aPd2YWianIpGjIfknvvnQr3tMq5r77FU6hQlV1tHbWT5kIesNjFFA1FMAoK9pkspoczhiqqYm-O9_XKMoQkgToqj_3xBWGypecPuSsTET0uipAJ7cML95hGm--LUubeyJ53lz3_VXcOQ4sGgQE1Lt2CcZGQdME3dIWIkXjJ2_ED2dCT9Pf-dEljyquEW5F5vCUbZcOaqUdUIWVV7Y498z6MSgzPV38koHBdxdscPGQdk4mg_UPrPa9iCV_tLNpvApFn7bxubrkPEV8EoYLrMBHsoHZ20w2Dryu_IJR3b9U9SWjkEqC3YVdIlwFoEAXelymN30z0rlMG1_hk59JNNMsy75mOxYgiI7YS473V1jQmwKMWXE1L7IkhFzj1doSCLRp0-HX9OPfCNABiK--n7d-QpetkZc8Yl9ZcV2SITiMmU7R2fboIH0kGINqxIXgY78L7r-ZI754wFbkSqToRVYak5Ii9V9YEMCS0ErXxM-SK1JHpZYLdajsyXUOtTdUvUb8KiMVGZZKUOy8sdZNCI9U6GL2m-NbGUQb0G8eiHxXptDl6k-BabmTWglCjE6aC9QQlAm1E0vjhDbeqpJ7pg"
+        },
+        "values": {
+          "npdId": "MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5",
+          "asnpId": "49c65ee9-4339-4fc3-af02-d14f7a356608",
+          "creationTimestamp": 1608938613098,
+          "cacheLifetime": 27070587902,
+          "responseType": "FRL_INITIAL",
+          "cacheExpiryWarningControl": {
+            "warningStartTimestamp": 1635404401000,
+            "warningInterval": 86400000
+          },
+          "challengeCodes": [
+            "BB7BACWXJ2KG366ZHJ",
+            "BBEFWIB79KPQDUIEZI"
+          ]
+        }
+      }
+    },
+    "profileServerUrl": "https://lcs-cops.adobe.io/",
+    "profileRequestPayloadParams": null,
+    "deploymentMode": "FRL_ISOLATED",
+    "branding": {
+      "name": null
+    }
+  }
+}

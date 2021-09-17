@@ -11,4 +11,5 @@ it.
 Protocol implementations for the Cacheable Offline Profile Server
  */
 
-// pub mod frl_online;
+pub mod frl_online;
+pub mod oc;
