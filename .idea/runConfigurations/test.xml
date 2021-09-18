@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="test" type="CargoCommandRunConfiguration" factoryName="Cargo Command" editBeforeRun="true">
+  <configuration default="false" name="test" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="command" value="test --lib -- --nocapture" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
     <option name="channel" value="DEFAULT" />
