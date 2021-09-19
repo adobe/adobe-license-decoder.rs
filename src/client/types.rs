@@ -70,7 +70,7 @@ impl OperatingConfig {
     }
 
     pub fn from_license_file(info: &FileInfo) -> Result<OperatingConfig> {
-        let mut result = OperatingConfig::from_file_info(&info)?;
+        let mut result = OperatingConfig::from_file_info(info)?;
         let data = json_from_file(&info.pathname)?;
         result.update_from_license_data(&data)?;
         Ok(result)
