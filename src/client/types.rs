@@ -86,7 +86,7 @@ impl OperatingConfig {
             "FRL_CONNECTED" => {
                 let server = payload["profileServerUrl"]
                     .as_str()
-                    .unwrap_or("http://lcs-cops.adobe.io")
+                    .unwrap_or("https://lcs-cops.adobe.io")
                     .to_string();
                 FrlOnline(server)
             }
