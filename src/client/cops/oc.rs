@@ -10,6 +10,34 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct PreconditioningData {
+    pub npd_id: String,
+    pub npd_spec_version: String,
+    pub deployment_mode: String,
+    pub operating_configs: Vec<OcFileSpec>,
+    pub certificates: Vec<CertFileSpec>,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OcFileSpec {
+    pub name: String,
+    pub extension: String,
+    #[serde(deserialize_with = "crate::utilities::base64_encoded_json::deserialize")]
+    pub content: OperatingConfig,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CertFileSpec {
+    pub name: String,
+    pub extension: String,
+    #[serde(skip)]
+    pub content: String,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OperatingConfig {
     pub oc_spec_version: String,
     pub signatures: Vec<SignatureSpecifier>,
@@ -150,11 +178,17 @@ pub struct CertificateDetails {
 #[cfg(test)]
 mod tests {
     use super::OperatingConfig;
+    use crate::client::cops::oc::PreconditioningData;
     use crate::client::types::{FileInfo, OperatingConfig as ManualOperatingConfig};
-    use pretty_assertions::assert_eq;
+
+    extern crate assert_json_diff;
+    extern crate serde_json; // 1.0.69
+
+    use assert_json_diff::assert_json_include;
+    use serde_json::json;
 
     #[test]
-    fn test_online() {
+    fn test_online_oc() {
         // first parse the actual operating config and make sure it matches the hand parse
         let path = "rsrc/OperatingConfigs/UGhvdG9zaG9wMXt9MjAxODA3MjAwNA-ODU0YjU5OGQtOTE1Ni00NDZiLWFlZDYtMGQ1ZGM2ZmVhZDBi-80.operatingconfig";
         let info = FileInfo::from_path(path).expect("Can't find online test data");
@@ -166,7 +200,7 @@ mod tests {
             .expect("Can't manually extract config");
         assert_eq!(oc1.payload.npd_id, oc2.npd_id, "npdIds do not match");
         assert_eq!(oc1.payload.ngl_app_id, oc2.app_id, "appIds do not match");
-        // now serialize the OC and make sure it matches the reference decode
+        // now serialize the OC and make sure it matches the hand-generated reference decode
         let decode = serde_json::to_string(&oc1).unwrap();
         let ref_path = "rsrc/OperatingConfigs/ps-online-proxy.operatingconfig";
         let ref_decode =
@@ -175,7 +209,7 @@ mod tests {
     }
 
     #[test]
-    fn test_isolated() {
+    fn test_isolated_oc() {
         let path = "rsrc/OperatingConfigs/SWxsdXN0cmF0b3Ixe30yMDE4MDcyMDA0-MmE0N2E4M2UtNjFmNS00NmM2LWE0N2ItOGE0Njc2MTliOTI5-80.operatingconfig";
         let info = FileInfo::from_path(path).expect("Can't find isolated test data");
         let json = std::fs::read_to_string(&info.pathname)
@@ -194,7 +228,7 @@ mod tests {
     }
 
     #[test]
-    fn test_lan() {
+    fn test_lan_oc() {
         let path = "rsrc/OperatingConfigs/SWxsdXN0cmF0b3Ixe30yMDE4MDcyMDA0-OTUzZTViZWYtYWJmMy00NGUxLWFjYjUtZmZhN2MyMDY4YjQx-80.operatingconfig";
         let info = FileInfo::from_path(path).expect("Can't find LAN test data");
         let json =
@@ -213,7 +247,7 @@ mod tests {
     }
 
     #[test]
-    fn test_sdl() {
+    fn test_sdl_oc() {
         let acro_path = "rsrc/OperatingConfigs/QWNyb2JhdERDMXt9MjAxODA3MjAwNA-NDIzOTc1ZTItODQ2Ni00MDU0LTk2ZDEtNWQ4NzMwOWE4NGZk-90.operatingconfig";
         let id_path = "rsrc/OperatingConfigs/SW5EZXNpZ24xe30yMDE4MDcyMDA0-NDIzOTc1ZTItODQ2Ni00MDU0LTk2ZDEtNWQ4NzMwOWE4NGZk-90.operatingconfig";
         let acro_info =
@@ -258,5 +292,30 @@ mod tests {
         let id_ref_decode =
             std::fs::read_to_string(id_ref_path).expect("Can't read reference JSON");
         assert_eq!(id_decode, id_ref_decode);
+    }
+
+    #[test]
+    fn test_online_package() {
+        let path =
+            "rsrc/packages/mac/online-proxy-premiere/ngl-preconditioning-data.json";
+        let info = FileInfo::from_path(path).expect("Can't find test data");
+        let json =
+            std::fs::read_to_string(&info.pathname).expect("Can't read package data");
+        let pcd: PreconditioningData =
+            serde_json::from_str(&json).expect("Can't parse package data");
+        let ocs1 = pcd.operating_configs;
+        let ocs2 = ManualOperatingConfig::from_preconditioning_file(&info)
+            .expect("Can't manually extract config");
+        assert_eq!(
+            ocs1.len(),
+            ocs2.len(),
+            "Different number of OC specs and OCs?"
+        );
+        for i in 0..ocs1.len() {
+            let oc1 = &ocs1[i].content;
+            let oc2 = &ocs2[i];
+            assert_eq!(oc1.payload.npd_id, oc2.npd_id, "npdIds do not match");
+            assert_eq!(oc1.payload.ngl_app_id, oc2.app_id, "appIds do not match");
+        }
     }
 }

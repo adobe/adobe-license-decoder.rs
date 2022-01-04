@@ -146,7 +146,6 @@ impl OperatingConfig {
         for oc_data in oc_vec {
             result.push(OperatingConfig::from_preconditioning_data(&oc_data)?)
         }
-        result.sort_by(|oc1, oc2| oc1.app_id.cmp(&oc2.app_id));
         Ok(result)
     }
 

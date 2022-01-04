@@ -107,7 +107,7 @@ pub fn shorten_oc_file_name(name: &str) -> Result<String> {
 #[cfg(target_os = "macos")]
 pub fn get_saved_credential(key: &str) -> Result<String> {
     let service = format!("Adobe App Info ({})", &key);
-    let keyring = keyring::Keyring::new(&service, "App Info");
+    let keyring = keyring::Entry::new(&service, "App Info");
     keyring.get_password().map_err(|e| eyre!(e))
 }
 
@@ -116,8 +116,8 @@ pub fn get_saved_credential(key: &str) -> Result<String> {
     let mut result = String::new();
     for i in 1..100 {
         let service = format!("Adobe App Info ({})(Part{})", key, i);
-        let keyring = keyring::Keyring::new(&service, "App Info");
-        let note = keyring.get_password_for_target(&service);
+        let keyring = keyring::Entry::new_with_target(&service, &service, "App Info");
+        let note = keyring.get_password();
         if let Ok(note) = note {
             result.push_str(note.trim());
         } else {
