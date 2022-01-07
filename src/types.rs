@@ -70,8 +70,8 @@ impl OperatingConfig {
     }
 
     pub fn from_license_file(info: &FileInfo) -> Result<OperatingConfig> {
-        let mut result = OperatingConfig::from_file_info(&info)?;
-        let data = json_from_file(&info)?;
+        let mut result = OperatingConfig::from_file_info(info)?;
+        let data = json_from_file(info)?;
         result.update_from_license_data(&data)?;
         Ok(result)
     }
@@ -151,7 +151,7 @@ impl OperatingConfig {
     }
 
     pub fn from_preconditioning_file(info: &FileInfo) -> Result<Vec<OperatingConfig>> {
-        let data = json_from_file(&info)?;
+        let data = json_from_file(info)?;
         OperatingConfig::from_preconditioning_json(&data)
     }
 

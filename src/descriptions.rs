@@ -56,7 +56,7 @@ pub fn describe_file(info: &FileInfo, verbose: i32) -> Result<()> {
         describe_preconditioning_data(&ocs, verbose);
         Ok(())
     } else if info.extension.eq_ignore_ascii_case("operatingconfig") {
-        let oc = OperatingConfig::from_license_file(&info)?;
+        let oc = OperatingConfig::from_license_file(info)?;
         describe_operating_configs(&vec![oc], verbose)
     } else {
         Err(eyre!("Not a license file: {}", info.pathname))
