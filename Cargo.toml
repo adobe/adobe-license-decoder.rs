@@ -11,7 +11,7 @@ base64 = "0.13.0"
 shellexpand = "2.0.0"
 chrono = "0.4.19"
 glob = "0.3.0"
-keyring = { git = "https://github.com/adobeDan/keyring-rs", branch = "master" }
+keyring = "1.0.0"
 eyre = "0.6.5"
 visdom = "0.4.0"
 zip = "0.5.11"
