@@ -103,7 +103,7 @@ fn describe_preconditioning_data(ocs: &[OperatingConfig], verbose: i32) {
 
 fn describe_package(oc: &OperatingConfig, verbose: i32) {
     if verbose > 0 {
-        println!("    Package UUID: {}", &oc.package_id);
+        println!("    Package License ID: {}", &oc.npd_id);
     }
     println!("    License type: {}", &oc.mode);
     if verbose > 0 {
