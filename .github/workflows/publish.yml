@@ -1,4 +1,16 @@
-name: Publish executables
+# This runs on new tags only. To trigger, create a tag and push it upstream. Do not manually create a release
+# in the Github UI
+#
+# Basic workflow:
+#
+# 1. Create release for tag
+#   a. capture upload URl
+# 2. Run builds for all target architectures
+# 3. Zip executables so we preserve exec permissions and don't have to give the
+#    binary files weird names
+#   a. the zip filename contains version and architecture info
+# 4. Upload assets to release URL
+name: release
 
 on:
   push:
@@ -6,25 +18,42 @@ on:
       - 'v*'
 
 jobs:
-  publish:
+  create-release:
+    runs-on: ubuntu-22.04
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+      version: ${{ env.VERSION }}
+    steps:
+      - name: Get version from release tag
+        shell: bash
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          echo "version is: ${{ env.VERSION }}"
+      - name: Create the release
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: Adobe License Decoder ${{ env.VERSION }}
+  build-release:
+    name: build-release
+    needs: ['create-release']
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         arch: [x86_64-apple-darwin, aarch64-apple-darwin, x86_64-pc-windows-msvc]
         include:
           - arch: x86_64-pc-windows-msvc
-            os: windows-latest
-            executable_name: adobe-license-decoder.exe
-            posted_name: adobe-license-decoder.windows_x86_64.exe
+            os: windows-2022
+            exec: adobe-license-decoder.exe
           - arch: x86_64-apple-darwin
-            os: macos-latest
-            executable_name: adobe-license-decoder
-            posted_name: adobe-license-decoder.mac_x86_64
+            os: macos-11
+            exec: adobe-license-decoder
           - arch: aarch64-apple-darwin
-            os: macos-latest
-            executable_name: adobe-license-decoder
-            posted_name: adobe-license-decoder.mac_arm64
-
+            os: macos-11
+            exec: adobe-license-decoder
     steps:
       - name: upgrade XCode
         uses: maxim-lobanov/setup-xcode@v1
@@ -54,10 +83,27 @@ jobs:
           command: build
           args:  --target ${{ matrix.arch }} --release --locked
 
-      - name: Post release executable
-        uses: svenstaro/upload-release-action@v2
+      - name: Archive release
+        shell: bash
+        run: |
+          distname=adobe-license-decoder-${{ needs.create-release.outputs.version }}-${{ matrix.arch }}
+          mkdir dist
+          cp target/${{ matrix.arch }}/release/${{ matrix.exec }} dist/
+          cd dist
+          if [ "${{ matrix.os }}" = "windows-2022" ]; then
+            7z a "$distname.zip" ${{ matrix.exec }}
+            echo "ASSET=$distname.zip" >> $GITHUB_ENV
+          else
+            tar czf "$distname.tar.gz" ${{ matrix.exec }}
+            echo "ASSET=$distname.tar.gz" >> $GITHUB_ENV
+          fi
+          cd ..
+      - name: Upload release archive
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ matrix.arch }}/release/${{ matrix.executable_name }}
-          asset_name: ${{ matrix.posted_name }}
-          tag: ${{ github.ref }}
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: dist/${{ env.ASSET }}
+          asset_name: ${{ env.ASSET }}
+          asset_content_type: application/octet-stream
