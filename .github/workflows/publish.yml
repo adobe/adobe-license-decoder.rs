@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: upgrade XCode
         uses: maxim-lobanov/setup-xcode@v1
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-11' }}
         with:
           xcode-version: latest-stable
 
