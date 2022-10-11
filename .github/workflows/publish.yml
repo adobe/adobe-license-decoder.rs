@@ -86,7 +86,7 @@ jobs:
       - name: Archive release
         shell: bash
         run: |
-          distname=adobe-license-decoder-${{ needs.create_release.outputs.version }}-${{ matrix.arch }}
+          distname=adobe-license-decoder-${{ needs.create-release.outputs.version }}-${{ matrix.arch }}
           mkdir dist
           cp target/${{ matrix.arch }}/release/${{ matrix.exec }} dist/
           cd dist
@@ -95,7 +95,7 @@ jobs:
             echo "ASSET=$distname.zip" >> $GITHUB_ENV
           else
             tar czf "$distname.tar.gz" ${{ matrix.exec }}
-            echo "ASSET=$distname.tar.gz >> $GITHUB_ENV
+            echo "ASSET=$distname.tar.gz" >> $GITHUB_ENV
           fi
           cd ..
       - name: Upload release archive
